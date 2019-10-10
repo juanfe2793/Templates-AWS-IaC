@@ -40,57 +40,75 @@ Dicho archivo puede ser un JSON o YAML, a través del cual, se describe una infr
  
 ## 3. CloudFormation Design Tool – Añadir Recursos.
 
-Crear Stack.
+### Crear Stack.
 
-Lo primero es buscar el servicio de AWS CloudFormation dentro de los recursos de AWS. Una vez abierto el servicio, verá una ventana cómo la siguiente:
- 
+Lo primero es buscar el servicio de AWS CloudFormation dentro de los recursos de AWS. Una vez abierto el servicio,  damos clic en la opción Create Stack, cómo se aprecia en la siguiente captura:
 
-Se aconseja dar clic en la opción: “Try it out now and provide us feedback”. Para trabajar con la interfaz actualizada. Una vez dentro, damos clic en la opción Create Stack, cómo se aprecia en la siguiente captura:
+_IMAGEN_
  
 Ahora seleccionamos la opción: “Crear un Template in Designer”. Está opción nos abrirá una nueva ventana a través de la cuál vamos a poder diseñar nuestra infraestructura AWS utilizando una aplicación web que nos permita insertar y conectar recursos de una manera muy simple.
 
  
-
+_IMAGEN_
  
 
 Con esta herramienta iremos creando paso a paso una plantilla que nos permita automatizar el proceso de creación de una infraestructura en AWS. Para iniciar, vamos a cambiar el nombre de la plantilla por BasicWebServerInVPC. 
- 	Es importante crear los recursos con los mismos nombres para evitar fallos en la ejecución de la plantilla al final del laboratorio.
+
+_IMAGEN_
+
+**Es importante que usted considere revisar los nombres de los recursos durante el desarrollo de este laboratorio**. Por último, se aclara que la herramienta de Cloud Formation Designer no guarda de manera automatica los avances y falla si existen errores de sintaxis en la construcción de la plantilla. 
 
  
-Añadir VPC y recursos EC2.
+### Añadir VPC y recursos EC2.
 
 Ahora vamos a empezar a agregar los recursos al lienzo en blanco. En el panel Resource types (Tipos de recursos), desde la categoría EC2, arrastre un tipo de recurso VPC hacia el panel Canvas (Lienzo). En este punto, usted debe haber notado que los recursos están organizados por categorías de recursos, y que se encuentran todos los posibles recursos de AWS. 
 
  
+_IMAGEN_
 
+AWS CloudFormation Designer modifica inmediatamente la plantilla para incluir un recurso de VPC, los resultados tienen un aspecto similar al siguiente fragmento de código YAML.
 
-AWS CloudFormation Designer modifica inmediatamente la plantilla para incluir un recurso de VPC, los resultados tienen un aspecto similar al siguiente fragmento de código JSON.
-{
-    "Resources": {
-        "EC2VPC3PZ": {
-            "Type": "AWS::EC2::VPC",
-            "Properties": {}
-        }
-    }
-}
+> Resources:
+>
+>  VPC:
+>
+>    Type: 'AWS::EC2::VPC'
+>
+>      Properties: {}
 
 Adicionalmente, puede consultar la plantilla completa, presionando la pestaña template. 
+
+_IMAGEN_
  
-Ahora cambie el nombre de la VPC a VPC
-Una vez cambiado el nombre, tenemos que añadir una subred para poder asociar una instancia EC2, que aloja el sitio web. Recuerde que las instancias deben estar en una subred. Añada un tipo de recurso Subnet dentro de la VPC y cámbiele el nombre por PublicSubnet.
-Cuando añade la subred dentro de la VPC, AWS CloudFormation Designer asocia automáticamente la subred con la VPC. Esta asociación es un modelo de contenedor, donde los recursos dentro del contenedor se asocian automáticamente. 
-Al final de este punto debe tener la plantilla de esta manera:
+Ahora cambie el nombre de la **VPC** a _VPC_
+
+_IMAGEN_
+
+Una vez cambiado el nombre, tenemos que añadir una subred para poder asociar una instancia EC2, que aloja el sitio web. Recuerde que las instancias deben estar en una subred. Añada un tipo de recurso **Subnet** dentro de la VPC y cámbiele el nombre por PublicSubnet.
+
+_IMAGEN_
+
+Cuando añade la subred dentro de la VPC, AWS CloudFormation Designer asocia automáticamente la subred con la VPC. Esta asociación es un modelo de contenedor, donde los recursos dentro del contenedor se asocian automáticamente. Al final de este punto debe tener la plantilla de esta manera:
  
+ _IMAGEN_
  
-Añada un tipo de recurso Instance dentro del recurso PublicSubnet y cámbiele el nombre por WebServerInstance. De forma similar a la forma en que esto funcionó con la subred y la VPC, la adición de la instancia en la subred asocia automáticamente la instancia con la subred. Una vez modificado el nombre, la plantilla debe quedar de la siguiente manera:
+Añada un tipo de recurso **Instance** dentro del recurso PublicSubnet y cámbiele el nombre por _WebServerInstance_. De forma similar a la forma en que esto funcionó con la subred y la VPC, la adición de la instancia en la subred asocia automáticamente la instancia con la subred. Una vez modificado el nombre, la plantilla debe quedar de la siguiente manera:
+
+_IMAGEN_
  
 
 Añada un tipo de recurso SecurityGroup dentro de la VPC y cámbiele el nombre por WebServerSecurityGroup. El grupo de seguridad es un firewall virtual que controla el tráfico entrante y saliente de la instancia del servidor web. También es necesario para las instancias de una VPC. 
-Adicionalmente, añada un tipo de recurso InternetGateway en cualquier lugar fuera de la VPC y cámbiele el nombre por InternetGateway. El Internet Gateway permite la comunicación entre la instancia que está dentro de la VPC e Internet. Sin este recurso, nadie puede obtener acceso a su sitio web.
-En este punto del laboratorio, deberá tener el siguiente diagrama en el canvas:
+
+_IMAGEN_
+
+Adicionalmente, añada un tipo de recurso InternetGateway en cualquier lugar fuera de la VPC y cámbiele el nombre por InternetGateway. El Internet Gateway permite la comunicación entre la instancia que está dentro de la VPC e Internet. Sin este recurso, nadie puede obtener acceso a su sitio web. En este punto del laboratorio, deberá tener el siguiente diagrama en el canvas:
  
+ _IMAGEN_
 
 A continuación, debemos añadir una tabla de ruteo y una ruta para especificar cómo dirigir el tráfico de la red desde una subred. Añada una RouteTable dentro de la VPC y cámbiele el nombre por PublicRouteTable.
+
+_IMAGEN_
+
 Para añadir una regla de enrutamiento en la tabla de ruteo, añada un tipo de recurso Route dentro del recurso PublicRouteTable y cámbiele el nombre por PublicRoute. Utilizaremos la ruta para especificar hacia dónde dirigir el tráfico.
 En este punto, su diagrama de Canvas debe verse de la siguiente manera:
  
