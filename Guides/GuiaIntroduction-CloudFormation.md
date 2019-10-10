@@ -36,7 +36,7 @@ Cloud Formation
 CloudFormation permite usar un archivo de texto simple para modelar y aprovisionar, de una manera segura y automatizada, todos los recursos necesarios para las aplicaciones en todas las regiones y cuentas. 
 Dicho archivo puede ser un JSON o YAML, a través del cual, se describe una infraestructura AWS y su comportamiento. Con AWS CloudFormation es posible desarrollar Infraestructura cómo código (IaaC). El siguiente  diagrama describe el funcionamiento general de AWS CloudFormation: 
 
-![Diagrama1](FuncionamientoCloudFormation.png)
+![Diagrama1](img/FuncionamientoCloudFormation.png)
  
 ## 3. CloudFormation Design Tool – Añadir Recursos.
 
