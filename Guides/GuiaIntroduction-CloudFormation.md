@@ -97,54 +97,66 @@ Añada un tipo de recurso **Instance** dentro del recurso PublicSubnet y cámbie
 _IMAGEN_
  
 
-Añada un tipo de recurso SecurityGroup dentro de la VPC y cámbiele el nombre por WebServerSecurityGroup. El grupo de seguridad es un firewall virtual que controla el tráfico entrante y saliente de la instancia del servidor web. También es necesario para las instancias de una VPC. 
+Añada un tipo de recurso **SecurityGroup** dentro de la VPC y cámbiele el nombre por _WebServerSecurityGroup_. El grupo de seguridad es un firewall virtual que controla el tráfico entrante y saliente de la instancia del servidor web. También es necesario para las instancias de una VPC. 
 
 _IMAGEN_
 
-Adicionalmente, añada un tipo de recurso InternetGateway en cualquier lugar fuera de la VPC y cámbiele el nombre por InternetGateway. El Internet Gateway permite la comunicación entre la instancia que está dentro de la VPC e Internet. Sin este recurso, nadie puede obtener acceso a su sitio web. En este punto del laboratorio, deberá tener el siguiente diagrama en el canvas:
+Adicionalmente, añada un tipo de recurso **InternetGateway** en cualquier lugar fuera de la VPC y cámbiele el nombre por _InternetGateway_. El Internet Gateway permite la comunicación entre la instancia que está dentro de la VPC e Internet. Sin este recurso, nadie puede obtener acceso a su sitio web. En este punto del laboratorio, deberá tener el siguiente diagrama en el canvas:
  
  _IMAGEN_
 
-A continuación, debemos añadir una tabla de ruteo y una ruta para especificar cómo dirigir el tráfico de la red desde una subred. Añada una RouteTable dentro de la VPC y cámbiele el nombre por PublicRouteTable.
+A continuación, debemos añadir una tabla de ruteo y una ruta para especificar cómo dirigir el tráfico de la red desde una subred. Añada una **RouteTable** dentro de la VPC y cámbiele el nombre por PublicRouteTable.
 
 _IMAGEN_
 
-Para añadir una regla de enrutamiento en la tabla de ruteo, añada un tipo de recurso Route dentro del recurso PublicRouteTable y cámbiele el nombre por PublicRoute. Utilizaremos la ruta para especificar hacia dónde dirigir el tráfico.
-En este punto, su diagrama de Canvas debe verse de la siguiente manera:
- 
-Conectar Recursos.
+Para añadir una regla de enrutamiento en la tabla de ruteo, añada un tipo de recurso **Route** dentro del recurso PublicRouteTable y cámbiele el nombre por _PublicRoute_. Utilizaremos la ruta para especificar hacia dónde dirigir el tráfico.
+En este punto, su diagrama de infraestructura debe verse de la siguiente manera:
 
-Ahora debemos empezar a gestionar las conexiones entre recursos. Con esto definimos el comportamiento de la VPC y cómo serán tratados los paquetes.
-En el recurso InternetGateway, coloque el cursor sobre la vinculación de la gateway de Internet (AWS::EC2::VPCGatewayAttachment). Arrastre una conexión a la VPC. Cabe resaltar, que el borde de los recursos de destino válidos cambia a color verde. En este caso, la VPC es el único recurso de destino válido. 
-La conexión debe verse de la siguiente manera:
+_IMAGEN_
+
+
+### Conectar Recursos.
+
+Ahora debemos empezar a gestionar las conexiones entre recursos. Con esto definimos el comportamiento de la VPC y cómo serán tratados los paquetes. En el recurso **InternetGateway**, coloque el cursor sobre la vinculación de la gateway de Internet **(AWS::EC2::VPCGatewayAttachment)**. Arrastre una conexión a la VPC. Cabe resaltar, que el borde de los recursos de destino válidos cambia a color verde. En este caso, la VPC es el único recurso de destino válido. La conexión debe verse de la siguiente manera:
  
-Para la ruta pública, queremos que el gateway de Internet sea el destino por defecto. Utilice GatewayId para crear una conexión desde el recurso PublicRoute al gateway de Internet. Este proceso se aprecia en la siguiente captura de pantalla:
+_IMAGEN_
+
+
  
+Para la ruta pública, queremos que el gateway de Internet sea el destino por defecto. Utilice **GatewayId** para crear una conexión desde el recurso PublicRoute al gateway de Internet. Este proceso se aprecia en la siguiente captura de pantalla:
  
+_IMAGEN_
 
 AWS CloudFormation no puede asociar una ruta al gateway de Internet si no se ha realizado la conexión entre el Gateway de Internet y la VPC. Esto significa que tenemos que crear una dependencia explícita en la vinculación gateway de Internet-VPC. Con este proceso, nos aseguramos que nuestros recursos se creen de manera correcta una vez ejecutada nuestra plantilla. 
-En el recurso PublicRoute, pase el ratón por encima del punto DependsOn. Arrastre una conexión a la vinculación gateway de Internet-VPC (AWS::EC2::VPCGatewayAttachment). Con conexiones DependsOn, AWS CloudFormation Designer crea una dependencia (un atributo DependsOn), donde el recurso de origen depende del recurso de destino. 
+
+En el recurso **PublicRoute**, pase el ratón por encima del punto **DependsOn**. Arrastre una conexión a la vinculación gateway de Internet-VPC (AWS::EC2::VPCGatewayAttachment). Con conexiones DependsOn, AWS CloudFormation Designer crea una dependencia (un atributo DependsOn), donde el recurso de origen depende del recurso de destino. 
 
 Al finalizar tendrá el diagrama de la siguiente manera:
+
+_IMAGEN_
  
 Ahora, cree otra dependencia desde el recurso WebServerInstance al recurso PublicRoute. El recurso WebServerInstance depende de la ruta pública para dirigir el tráfico a través de Internet. Dicha conexión modifica el diagrama así:
  
+_IMAGEN_
 
-Por último, cree una conexión desde el recurso PublicRouteTable al recurso PublicSubnet para asociar la tabla de ruteo y la subred. Ahora la subred pública utilizará la tabla de ruteo público para dirigir el tráfico.
-De esta manera, el diagrama final de nuestra infraestructura AWS y sus relaciones será la siguiente:
+
+Por último, cree una conexión desde el recurso **PublicRouteTable** al recurso **PublicSubnet** para asociar la tabla de ruteo y la subred. Ahora la subred pública utilizará la tabla de ruteo público para dirigir el tráfico. De esta manera, el diagrama final de nuestra infraestructura AWS y sus relaciones será la siguiente:
+
+_IMAGEN_
  
 Puede guardar los avances de la plantilla, haciendo clic en la sección archivo -> save -> Local File. Como se aprecia en las siguientes capturas:
  
-
+_IMAGEN_
  
 
-Configuración Parámetros, mapeos y salidas.
+## 4. Configuración Parámetros, mapeos y salidas.
 
-Antes de especificar las propiedades de los recursos, tenemos que añadir otros componentes a nuestra plantilla para que resulte más fácil reutilizar la plantilla en futuras ocasiones. En este paso, vamos a utilizar el editor integrado de AWS CloudFormation Designer para añadir parámetros, mapeos y salidas. 
-Estos parámetros, mapeos y salidas, son valores genéricos de AWS, por lo que siéntase en la libertad de copiar y pegar los fragmentos de código presentados en esta sección.
-Añadir Parámetros.
+Antes de especificar las propiedades de los recursos, tenemos que añadir otros componentes a nuestra plantilla para que resulte más fácil reutilizar la plantilla en futuras ocasiones. En este paso, vamos a utilizar el editor integrado de AWS CloudFormation Designer para añadir parámetros, mapeos y salidas. Estos parámetros, mapeos y salidas, son valores genéricos de AWS, por lo que siéntase en la libertad de copiar y pegar los fragmentos de código presentados en esta sección.
+
+### Añadir Parámetros.
 
 Los parámetros son valores de entrada que se especifican al momento de crear una pila (Ejecución de la Plantilla). Son útiles para evitar tener valores codificados de forma rígida en las plantillas. Por ejemplo, no es necesario codificar de manera rígida el tipo de instancia del servidor web en la plantilla; en su lugar, puede utilizar un parámetro para especificar el tipo de instancia (t2.micro, t2.medium, entre otros). De esta forma, puede utilizar la misma plantilla para crear varios servidores web con diferentes tipos de instancias.
+
 En AWS CloudFormation Designer, existen 2 niveles de edición: el nivel de plantilla y el nivel de recursos. En el nivel de la plantilla, puede editar el resto de las secciones de una plantilla, como, por ejemplo, los parámetros, mapeos y salidas de la plantilla, excepto la sección Resources. En el nivel de recursos, puede editar las propiedades de recursos y atributos.
 
 Al hacer clic en una zona abierta en el canvas esto le permite editar los componentes de nivel de plantilla. Para editar los componentes de nivel de recursos, seleccione un recurso.
