@@ -1,0 +1,91 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: AWS CloudFormation template for create IAM Roles to EC2 and System Manager | Base on AWS SSM documentation
+Resources:
+  ManagedInstanceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ssm.amazonaws.com
+                - ec2.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM'
+      Path: /
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 7a25198a-fd64-4ce2-97d5-a7413ae98706
+  ManagedInstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Path: /
+      Roles:
+        - !Ref ManagedInstanceRole
+      InstanceProfileName: ManagedInstanceProfile
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: e1895401-e359-47a1-9cb3-ec9a7bccaa99
+  AutomationServiceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ssm.amazonaws.com
+                - ec2.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonSSMAutomationRole'
+      Path: /
+      RoleName: AutomationServiceRole
+      Policies:
+        - PolicyName: passrole
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'iam:PassRole'
+                Resource:
+                  - !GetAtt ManagedInstanceRole.Arn
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 2c89abb6-955e-4d78-958d-24fe67595fe8
+Metadata:
+  'AWS::CloudFormation::Designer':
+    7a25198a-fd64-4ce2-97d5-a7413ae98706:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 60
+        'y': 90
+      z: 1
+      embeds: []
+    2c89abb6-955e-4d78-958d-24fe67595fe8:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 180
+        'y': 90
+      z: 1
+      embeds: []
+    e1895401-e359-47a1-9cb3-ec9a7bccaa99:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 60
+        'y': 210
+      z: 1
+      embeds: []
+      isassociatedwith:
+        - 7a25198a-fd64-4ce2-97d5-a7413ae98706
