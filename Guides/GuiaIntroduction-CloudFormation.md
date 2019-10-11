@@ -518,183 +518,169 @@ Resources:
  ``` 
 ### Propiedades Instancia Web Server Instances.
 
-Ahora, se debe especificar un número de propiedades para la instancia del servidor web, por lo que vamos a configurar tan solo algunas propiedades para realizar este laboratorio. Las propiedades InstanceType e ImageId utilizan los valores de los parámetros y mapeos que especificamos en la sección anterior. 
-La propiedad NetworkInterfaces especifica los ajustes de red para la instancia del servidor web. Esta propiedad nos permite asociar el grupo de seguridad y la subred a la instancia. Aunque AWS CloudFormation Designer utilizó la propiedad SubnetId para asociar la instancia a la subred, tenemos que utilizar la propiedad NetworkInterfaces porque es la única forma de dar al servidor web una dirección IP pública. Cuando especifica la propiedad NetworkInterfaces, debe especificar la subred y el grupo de seguridad dentro de dicha propiedad.
-En la propiedad UserData, se especifican los scripts de configuración que se ejecutan una vez que la instancia está operativa. Toda la información de configuración se define en los metadatos de la instancia, que añadiremos en el siguiente paso.
+Ahora, se debe especificar un número de propiedades para la instancia del servidor web, por lo que vamos a configurar tan solo algunas propiedades para realizar este laboratorio. Las propiedades **InstanceType** e **ImageId** utilizan los valores de los parámetros y mapeos que especificamos en la sección anterior. 
+
+La propiedad **NetworkInterfaces** especifica los ajustes de red para la instancia del servidor web. Esta propiedad nos permite asociar el grupo de seguridad y la subred a la instancia. Aunque AWS CloudFormation Designer utilizó la propiedad **SubnetId** para asociar la instancia a la subred. 
+
+En la propiedad UserData, se especifican los scripts de configuración que se ejecutan una vez que la instancia está operativa, es decir, apenas inicia la instancia. Toda la información de configuración se define en los metadatos de la instancia, que añadiremos en el siguiente paso.
+
 Sustituya todas las propiedades por el siguiente fragmento de código:
-{
-    "Resources": {
-        "WebServerInstance": {
-            "Type": "AWS::EC2::Instance",
-            "Properties": {
-                
-                "InstanceType": {
-                  "Ref": "InstanceType"
-                },
-                "ImageId": {
-                  "Fn::FindInMap": [
-                    "AWSRegionArch2AMI",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    {
-                      "Fn::FindInMap": [
-                        "AWSInstanceType2Arch",
-                        {
-                          "Ref": "InstanceType"
-                        },
-                        "Arch"
-                      ]
-                    }
-                  ]
-                },
-                "KeyName": {
-                  "Ref": "KeyName"
-                },
-                
-                "NetworkInterfaces": [
-                   {
-                    "GroupSet": [
-                      {
-                        "Ref": "WebServerSecurityGroup"
-                      }
-                    ],
-                    "AssociatePublicIpAddress": "true",
-                    "DeviceIndex": "0",
-                    "DeleteOnTermination": "true",
-                    "SubnetId": {
-                      "Ref": "PublicSubnet"
-                    }
-                  }
-                ],
-                
-                "UserData": {
-                  "Fn::Base64": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "#!/bin/bash -xe\n",
-                        "yum install -y aws-cfn-bootstrap\n",
-                        "# Install the files and packages from the metadata\n",
-                        "/opt/aws/bin/cfn-init -v ",
-                        "         --stack ",
-                        {
-                          "Ref": "AWS::StackName"
-                        },
-                        "         --resource WebServerInstance ",
-                        "         --configsets All ",
-                        "         --region ",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "\n",
-                        "# Signal the status from cfn-init\n",
-                        "/opt/aws/bin/cfn-signal -e $? ",
-                        "         --stack ",
-                        {
-                          "Ref": "AWS::StackName"
-                        },
-                        "         --resource WebServerInstance ",
-                        "         --region ",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "\n"
-                      ]
-                    ]
-                  }
-                }
-            }
-        }
-    }
-}
-De esta manera, las propiedades de la instancia se aprecian a continuación:
- 
- 
 
- 
+``` YAML
+Resources:
+  WebServerInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType:
+        Ref: InstanceType
+      ImageId:
+        Fn::FindInMap:
+        - AWSRegionArch2AMI
+        - Ref: AWS::Region
+        - Fn::FindInMap:
+          - AWSInstanceType2Arch
+          - Ref: InstanceType
+          - Arch
+      KeyName:
+        Ref: KeyName
+      NetworkInterfaces:
+      - GroupSet:
+        - Ref: WebServerSecurityGroup
+        AssociatePublicIpAddress: 'true'
+        DeviceIndex: '0'
+        DeleteOnTermination: 'true'
+        SubnetId:
+          Ref: PublicSubnet
+      UserData:
+        Fn::Base64:
+          Fn::Join:
+          - ''
+          - - "#!/bin/bash -xe\n"
+            - 'yum install -y aws-cfn-bootstrap
 
-Metadatos Instancia WebServerInstance.
+'
+            - "# Install the files and packages from the metadata\n"
+            - "/opt/aws/bin/cfn-init -v "
+            - "         --stack "
+            - Ref: AWS::StackName
+            - "         --resource WebServerInstance "
+            - "         --configsets All "
+            - "         --region "
+            - Ref: AWS::Region
+            - "\n"
+            - "# Signal the status from cfn-init\n"
+            - "/opt/aws/bin/cfn-signal -e $? "
+            - "         --stack "
+            - Ref: AWS::StackName
+            - "         --resource WebServerInstance "
+            - "         --region "
+            - Ref: AWS::Region
+            - "\n"
+```
 
-Elija el recurso WebServerInstance y, a continuación, elija la pestaña Metadata (Metadatos) en el panel del editor integrado. Los Metadatos deben quedar de la siguiente manera.
-{
-    "Resources": {
-        "WebServerInstance": {
-            "Type": "AWS::EC2::Instance",
-            "Metadata": {
-                "AWS::CloudFormation::Designer": {
-                    "id": "f05d419d-9129-4547-9eba-bfd38fe74f2e"
-                },
-                    "AWS::CloudFormation::Init" : {
-                  "configSets" : {
-                    "All" : [ "ConfigureSampleApp" ]
-                  },
-                  "ConfigureSampleApp" : {
-                    "packages" : {
-                      "yum" : {
-                        "httpd" : []
-                      }
-                    },
-                    "files" : {
-                      "/var/www/html/index.html" : {
-                        "content" : { "Fn::Join" : ["\n", [
-                          "<h1>Felicitaciones. Acaba de implementar su primera plantilla en CloudFomration!!!</h1>"
-                        ]]},
-                        "mode"    : "000644",
-                        "owner"   : "root",
-                        "group"   : "root"
-                      }
-                    },
-                    "services" : {
-                      "sysvinit" : {
-                        "httpd"    : { "enabled" : "true", "ensureRunning" : "true" }
-                      }
-                    }
-                  }
-                }
-            }
-        }
-    }
-}
-Validar Plantilla.
+### Metadatos Instancia WebServerInstance.
+
+Elija el recurso **WebServerInstance** y, a continuación, elija la pestaña Metadata (Metadatos) en el panel del editor integrado. Los Metadatos deben quedar de la siguiente manera:
+
+``` YAML
+Resources:
+  WebServerInstance:
+    Type: AWS::EC2::Instance
+    Metadata:
+      AWS::CloudFormation::Designer:
+        id: f05d419d-9129-4547-9eba-bfd38fe74f2e
+      AWS::CloudFormation::Init:
+        configSets:
+          All:
+          - ConfigureSampleApp
+        ConfigureSampleApp:
+          packages:
+            yum:
+              httpd: []
+          files:
+            "/var/www/html/index.html":
+              content:
+                Fn::Join:
+                - "\n"
+                - - "<h1>Felicitaciones. Acaba de implementar su primera plantilla
+                    en CloudFormation!!!</h1>"
+              mode: '000644'
+              owner: root
+              group: root
+          services:
+            sysvinit:
+              httpd:
+                enabled: 'true'
+                ensureRunning: 'true'
+```
+
+
+## 6. Validar Plantilla.
 
 Ahora ya tendríamos lista nuestra plantilla para ejecución, sólo nos hace falta un paso. El último paso es validar que nuestra plantilla se encuentre correcta, utilizando el botón validar template cómo se aprecia en la siguiente captura.
+
+_IMAGEN_
  
 Si hemos seguido cada uno de los pasos de esta guía tendremos el siguiente mensaje:
  
 
-RECUERDE GUARDAR LA PLANTILLA!!!!
 
 
 
-
-Crear Stack y Ejecutar Plantilla.
+## 7. Crear Stack y Ejecutar Plantilla.
 
 Una vez terminada la creación de la plantilla, ya podremos realizar la ejecución de la misma para crear nuestra infraestructura AWS de manera automática a través del AWS CloudFormation. Para iniciar el proceso de ejecución, damos clic en la opción crear stack:
- 
+
+_IMAGEN_
 
 Nos aparecerá el siguiente menú, dónde seleccionaremos utilizar un template y subir un template file. Aquí subiremos la plantilla que acabamos de desarrollar:
+
+_IMAGEN_ 
  
-Algo importante que debe considerarse, es que Amazon creará un nuevo Bucket S3 para guardar el template, así, puede utilizarlo en un futuro de manera muy rápida.
-En la sección Specify Details (Especificar detalles), introduzca un nombre de pila en el campo Stack name (Nombre de pila). Para este ejemplo, use BasicWebServerStack.
+Algo importante que debe considerarse, es que Amazon Web Services creará un nuevo Bucket S3 para guardar el template, así, puede utilizarlo en un futuro de manera muy rápida. Guarde este enlace para descargar y modificar su plantilla en el futuro. 
+
+En la sección Specify Details (Especificar detalles), introduzca un nombre de pila en el campo Stack name (Nombre de pila). Para este ejemplo, use **BasicWebServerStack**.
+
+
 Los parámetros, que vemos en la creación del stack, son los que definimos previamente en la plantilla. Seleccione el tipo de instancia que está dispuesto a pagar, el nombre de las llaves a utilizar y la configuración de las reglas SSH. En esté caso, maneje la configuración cómo aparece a continuación:
+
+_IMAGEN_
+
  
 Damos clic en Next, y nos aparece la ventana para configurar las opciones de nuestro stack. Podemos configurar las etiquetas, roles IAM, políticas, configuraciones de rollback y demás opciones que podemos dejar en blanco en este momento.
-Por último, validamos toda la información que nos muestra AWS CloudFormation y damos click en Create Stack. Nos aparece el siguiente mensaje:}
+
+_IMAGEN_
+
+Por último, validamos toda la información que nos muestra AWS CloudFormation y damos click en Create Stack. Nos aparece el siguiente mensaje:
+
+_IMAGEN_
  
 Por ahora sólo debemos esperar que nuestro template se ejecute y al final podremos ver que nuestra infraestructura de AWS se encuentra operativa.
-Validación y Pruebas.
+
+_IMAGEN_
+
+## 8. Validación y Pruebas.
 
 Si todo sale bien, obtendremos el siguiente mensaje:
- 
+
+_IMAGEN_
  
 Ingresando a la dirección IP que nos muestra desde el Output, obtendremos:
-  
+
+_IMAGEN_
+
 Demostrando que nuestro Templete se ejecuta de manera correcta. 
-Para finalizar Validamos que todos nuestros recursos se crean de manera correcta. 
+
+_IMAGEN_
+
+
+Para finalizar Validamos que todos nuestros recursos se crean de manera correcta.  
+
+_IMAGEN_ 
  
  
  
-Bibliografía
+## 9. Referencias 
+
 Amazon Web Services. (2019). Tutorial: Procedimiento de creación de un servidor web básico con AWS CloudFormation Designer. Obtenido de https://docs.aws.amazon.com/es_es/AWSCloudFormation/latest/UserGuide/working-with-templates-cfn-designer-walkthrough-createbasicwebserver.html
 
