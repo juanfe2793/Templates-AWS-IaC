@@ -160,11 +160,11 @@ Los parámetros son valores de entrada que se especifican al momento de crear un
 
 En AWS CloudFormation Designer, existen 2 niveles de edición: el nivel de plantilla y el nivel de recursos. En el nivel de la plantilla, puede editar el resto de las secciones de una plantilla, como, por ejemplo, los parámetros, mapeos y salidas de la plantilla, excepto la sección Resources. En el nivel de recursos, puede editar las propiedades de recursos y atributos.
 
-Al hacer clic en una zona abierta en el canvas esto le permite editar los componentes de nivel de plantilla. Para editar los componentes de nivel de recursos, seleccione un recurso.
-En el panel de editor integrado, elija la pestaña Parameters (Parámetros) en la vista Components (Componentes). 
+Al hacer clic en una zona abierta en el canvas esto le permite editar los componentes de nivel de plantilla. Para editar los componentes de nivel de recursos, seleccione un recurso. En el panel de editor integrado, elija la pestaña Parameters (Parámetros) en la vista Components (Componentes). 
  
+Existen varias maneras de solicitar parámetros en una plantilla de Cloud Formation: la primera, con una lista desplegable limitada; la segunda con objetos existentes dentro de la cuenta de Amazon; la tercera, con una cadena de caracteres que ingrese el usuario, validando un formato especifico.
 
-El siguiente fragmento de código YAML añade parámetros para especificar el tipo de instancia del servidor web, un nombre de par de claves de Amazon EC2 para acceso de SSH al servidor web y el rango de direcciones IP que se puede utilizar para obtener acceso al servidor web mediante SSH.
+El siguiente fragmento de código YAML añade parámetros para especificar el tipo de instancia del servidor web, como una lista desplegable limitada. 
 
 ``` YAML
 Parameters:
@@ -229,14 +229,20 @@ Parameters:
     - cg1.4xlarge
     ConstraintDescription: Ingrese un valor de EC2 valido.
 ```
-Poner Texto Aquí.
 
+El siguiente fragmento de código YAML añade parámetros para especificar un nombre de par de claves de Amazon EC2 para acceso de SSH al servidor web 
 
+``` YAML
   KeyName:
     Description: Seleccione el nombre de una KeyPair para acceso a través de SSH.
     Type: AWS::EC2::KeyPair::KeyName
     ConstraintDescription: Debe seleccionar una llave existente.
-  SSHLocation:
+```
+
+El siguiente fragmento de código YAML añade parámetros para especificar el rango de direcciones IP que se puede utilizar para obtener acceso al servidor web mediante SSH.
+
+``` YAML
+SSHLocation:
     Description: " El rango de direcciones IP que se puede usar para acceder al servidor web usando SSH."
     Type: String
     MinLength: '9'
@@ -244,219 +250,273 @@ Poner Texto Aquí.
     Default: 0.0.0.0/0
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
     ConstraintDescription: Debe ingresar una IP valida x.x.x.x/x.
-
 ```
 
-Después de copiar los parámetros, la plantilla deberá verse de la siguiente manera:
+### Añadir Mapeos.
 
-_IMAGEN_
+Los mapeos son un conjunto de claves que se asocian a un conjunto de pares de nombre-valor. Son útiles para especificar valores según parámetro de entrada. En este tutorial, utilizaremos un mapeo para especificar un ID de AMI para una instancia EC2 en función del tipo de instancia y la región en la que se crea la pila. 
 
-Añadir Mapeos.
-
-Los mapeos son un conjunto de claves que se asocian a un conjunto de pares de nombre-valor. Son útiles para especificar valores basados en un valor de parámetro de entrada. En este tutorial, utilizaremos un mapeo para especificar un ID de AMI para una instancia EC2 en función del tipo de instancia y la región en la que se crea la pila. 
 En el panel del editor integrado, elija la pestaña Mappings (Mapeos). Copie los siguientes mapeos de JSON y péguelos en editor integrado.
-{      
-  "Mappings" : {
-    "AWSInstanceType2Arch" : {
-      "t1.micro"    : { "Arch" : "HVM64"  },
-      "t2.nano"     : { "Arch" : "HVM64"  },
-      "t2.micro"    : { "Arch" : "HVM64"  },
-      "t2.small"    : { "Arch" : "HVM64"  },
-      "t2.medium"   : { "Arch" : "HVM64"  },
-      "t2.large"    : { "Arch" : "HVM64"  },
-      "m1.small"    : { "Arch" : "HVM64"  },
-      "m1.medium"   : { "Arch" : "HVM64"  },
-      "m1.large"    : { "Arch" : "HVM64"  },
-      "m1.xlarge"   : { "Arch" : "HVM64"  },
-      "m2.xlarge"   : { "Arch" : "HVM64"  },
-      "m2.2xlarge"  : { "Arch" : "HVM64"  },
-      "m2.4xlarge"  : { "Arch" : "HVM64"  },
-      "m3.medium"   : { "Arch" : "HVM64"  },
-      "m3.large"    : { "Arch" : "HVM64"  },
-      "m3.xlarge"   : { "Arch" : "HVM64"  },
-      "m3.2xlarge"  : { "Arch" : "HVM64"  },
-      "m4.large"    : { "Arch" : "HVM64"  },
-      "m4.xlarge"   : { "Arch" : "HVM64"  },
-      "m4.2xlarge"  : { "Arch" : "HVM64"  },
-      "m4.4xlarge"  : { "Arch" : "HVM64"  },
-      "m4.10xlarge" : { "Arch" : "HVM64"  },
-      "c1.medium"   : { "Arch" : "HVM64"  },
-      "c1.xlarge"   : { "Arch" : "HVM64"  },
-      "c3.large"    : { "Arch" : "HVM64"  },
-      "c3.xlarge"   : { "Arch" : "HVM64"  },
-      "c3.2xlarge"  : { "Arch" : "HVM64"  },
-      "c3.4xlarge"  : { "Arch" : "HVM64"  },
-      "c3.8xlarge"  : { "Arch" : "HVM64"  },
-      "c4.large"    : { "Arch" : "HVM64"  },
-      "c4.xlarge"   : { "Arch" : "HVM64"  },
-      "c4.2xlarge"  : { "Arch" : "HVM64"  },
-      "c4.4xlarge"  : { "Arch" : "HVM64"  },
-      "c4.8xlarge"  : { "Arch" : "HVM64"  },
-      "g2.2xlarge"  : { "Arch" : "HVMG2"  },
-      "g2.8xlarge"  : { "Arch" : "HVMG2"  },
-      "r3.large"    : { "Arch" : "HVM64"  },
-      "r3.xlarge"   : { "Arch" : "HVM64"  },
-      "r3.2xlarge"  : { "Arch" : "HVM64"  },
-      "r3.4xlarge"  : { "Arch" : "HVM64"  },
-      "r3.8xlarge"  : { "Arch" : "HVM64"  },
-      "i2.xlarge"   : { "Arch" : "HVM64"  },
-      "i2.2xlarge"  : { "Arch" : "HVM64"  },
-      "i2.4xlarge"  : { "Arch" : "HVM64"  },
-      "i2.8xlarge"  : { "Arch" : "HVM64"  },
-      "d2.xlarge"   : { "Arch" : "HVM64"  },
-      "d2.2xlarge"  : { "Arch" : "HVM64"  },
-      "d2.4xlarge"  : { "Arch" : "HVM64"  },
-      "d2.8xlarge"  : { "Arch" : "HVM64"  },
-      "hi1.4xlarge" : { "Arch" : "HVM64"  },
-      "hs1.8xlarge" : { "Arch" : "HVM64"  },
-      "cr1.8xlarge" : { "Arch" : "HVM64"  },
-      "cc2.8xlarge" : { "Arch" : "HVM64"  }
-    },
-    "AWSRegionArch2AMI" : {
-      "us-east-1"        : {"HVM64" : "ami-0ff8a91507f77f867", "HVMG2" : "ami-0a584ac55a7631c0c"},
-      "us-west-2"        : {"HVM64" : "ami-a0cfeed8", "HVMG2" : "ami-0e09505bc235aa82d"},
-      "us-west-1"        : {"HVM64" : "ami-0bdb828fd58c52235", "HVMG2" : "ami-066ee5fd4a9ef77f1"},
-      "eu-west-1"        : {"HVM64" : "ami-047bb4163c506cd98", "HVMG2" : "ami-0a7c483d527806435"},
-      "eu-west-2"        : {"HVM64" : "ami-f976839e", "HVMG2" : "NOT_SUPPORTED"},
-      "eu-west-3"        : {"HVM64" : "ami-0ebc281c20e89ba4b", "HVMG2" : "NOT_SUPPORTED"},
-      "eu-central-1"     : {"HVM64" : "ami-0233214e13e500f77", "HVMG2" : "ami-06223d46a6d0661c7"},
-      "ap-northeast-1"   : {"HVM64" : "ami-06cd52961ce9f0d85", "HVMG2" : "ami-053cdd503598e4a9d"},
-      "ap-northeast-2"   : {"HVM64" : "ami-0a10b2721688ce9d2", "HVMG2" : "NOT_SUPPORTED"},
-      "ap-northeast-3"   : {"HVM64" : "ami-0d98120a9fb693f07", "HVMG2" : "NOT_SUPPORTED"},
-      "ap-southeast-1"   : {"HVM64" : "ami-08569b978cc4dfa10", "HVMG2" : "ami-0be9df32ae9f92309"},
-      "ap-southeast-2"   : {"HVM64" : "ami-09b42976632b27e9b", "HVMG2" : "ami-0a9ce9fecc3d1daf8"},
-      "ap-south-1"       : {"HVM64" : "ami-0912f71e06545ad88", "HVMG2" : "ami-097b15e89dbdcfcf4"},
-      "us-east-2"        : {"HVM64" : "ami-0b59bfac6be064b78", "HVMG2" : "NOT_SUPPORTED"},
-      "ca-central-1"     : {"HVM64" : "ami-0b18956f", "HVMG2" : "NOT_SUPPORTED"},
-      "sa-east-1"        : {"HVM64" : "ami-07b14488da8ea02a0", "HVMG2" : "NOT_SUPPORTED"},
-      "cn-north-1"       : {"HVM64" : "ami-0a4eaf6c4454eda75", "HVMG2" : "NOT_SUPPORTED"},
-      "cn-northwest-1"   : {"HVM64" : "ami-6b6a7d09", "HVMG2" : "NOT_SUPPORTED"}
-    }
-  }
-}
-Al finalizar su plantilla debe ser similar a la siguiente captura de pantalla:
- 
 
-Añadir Salidas
+``` YAML
+---
+Mappings:
+  AWSInstanceType2Arch:
+    t1.micro:
+      Arch: HVM64
+    t2.nano:
+      Arch: HVM64
+    t2.micro:
+      Arch: HVM64
+    t2.small:
+      Arch: HVM64
+    t2.medium:
+      Arch: HVM64
+    t2.large:
+      Arch: HVM64
+    m1.small:
+      Arch: HVM64
+    m1.medium:
+      Arch: HVM64
+    m1.large:
+      Arch: HVM64
+    m1.xlarge:
+      Arch: HVM64
+    m2.xlarge:
+      Arch: HVM64
+    m2.2xlarge:
+      Arch: HVM64
+    m2.4xlarge:
+      Arch: HVM64
+    m3.medium:
+      Arch: HVM64
+    m3.large:
+      Arch: HVM64
+    m3.xlarge:
+      Arch: HVM64
+    m3.2xlarge:
+      Arch: HVM64
+    m4.large:
+      Arch: HVM64
+    m4.xlarge:
+      Arch: HVM64
+    m4.2xlarge:
+      Arch: HVM64
+    m4.4xlarge:
+      Arch: HVM64
+    m4.10xlarge:
+      Arch: HVM64
+    c1.medium:
+      Arch: HVM64
+    c1.xlarge:
+      Arch: HVM64
+    c3.large:
+      Arch: HVM64
+    c3.xlarge:
+      Arch: HVM64
+    c3.2xlarge:
+      Arch: HVM64
+    c3.4xlarge:
+      Arch: HVM64
+    c3.8xlarge:
+      Arch: HVM64
+    c4.large:
+      Arch: HVM64
+    c4.xlarge:
+      Arch: HVM64
+    c4.2xlarge:
+      Arch: HVM64
+    c4.4xlarge:
+      Arch: HVM64
+    c4.8xlarge:
+      Arch: HVM64
+    g2.2xlarge:
+      Arch: HVMG2
+    g2.8xlarge:
+      Arch: HVMG2
+    r3.large:
+      Arch: HVM64
+    r3.xlarge:
+      Arch: HVM64
+    r3.2xlarge:
+      Arch: HVM64
+    r3.4xlarge:
+      Arch: HVM64
+    r3.8xlarge:
+      Arch: HVM64
+    i2.xlarge:
+      Arch: HVM64
+    i2.2xlarge:
+      Arch: HVM64
+    i2.4xlarge:
+      Arch: HVM64
+    i2.8xlarge:
+      Arch: HVM64
+    d2.xlarge:
+      Arch: HVM64
+    d2.2xlarge:
+      Arch: HVM64
+    d2.4xlarge:
+      Arch: HVM64
+    d2.8xlarge:
+      Arch: HVM64
+    hi1.4xlarge:
+      Arch: HVM64
+    hs1.8xlarge:
+      Arch: HVM64
+    cr1.8xlarge:
+      Arch: HVM64
+    cc2.8xlarge:
+      Arch: HVM64
+  AWSRegionArch2AMI:
+    us-east-1:
+      HVM64: ami-0ff8a91507f77f867
+      HVMG2: ami-0a584ac55a7631c0c
+    us-west-2:
+      HVM64: ami-a0cfeed8
+      HVMG2: ami-0e09505bc235aa82d
+    us-west-1:
+      HVM64: ami-0bdb828fd58c52235
+      HVMG2: ami-066ee5fd4a9ef77f1
+    eu-west-1:
+      HVM64: ami-047bb4163c506cd98
+      HVMG2: ami-0a7c483d527806435
+    eu-west-2:
+      HVM64: ami-f976839e
+      HVMG2: NOT_SUPPORTED
+    eu-west-3:
+      HVM64: ami-0ebc281c20e89ba4b
+      HVMG2: NOT_SUPPORTED
+    eu-central-1:
+      HVM64: ami-0233214e13e500f77
+      HVMG2: ami-06223d46a6d0661c7
+    ap-northeast-1:
+      HVM64: ami-06cd52961ce9f0d85
+      HVMG2: ami-053cdd503598e4a9d
+    ap-northeast-2:
+      HVM64: ami-0a10b2721688ce9d2
+      HVMG2: NOT_SUPPORTED
+    ap-northeast-3:
+      HVM64: ami-0d98120a9fb693f07
+      HVMG2: NOT_SUPPORTED
+    ap-southeast-1:
+      HVM64: ami-08569b978cc4dfa10
+      HVMG2: ami-0be9df32ae9f92309
+    ap-southeast-2:
+      HVM64: ami-09b42976632b27e9b
+      HVMG2: ami-0a9ce9fecc3d1daf8
+    ap-south-1:
+      HVM64: ami-0912f71e06545ad88
+      HVMG2: ami-097b15e89dbdcfcf4
+    us-east-2:
+      HVM64: ami-0b59bfac6be064b78
+      HVMG2: NOT_SUPPORTED
+    ca-central-1:
+      HVM64: ami-0b18956f
+      HVMG2: NOT_SUPPORTED
+    sa-east-1:
+      HVM64: ami-07b14488da8ea02a0
+      HVMG2: NOT_SUPPORTED
+    cn-north-1:
+      HVM64: ami-0a4eaf6c4454eda75
+      HVMG2: NOT_SUPPORTED
+    cn-northwest-1:
+      HVM64: ami-6b6a7d09
+      HVMG2: NOT_SUPPORTED
+```
+### Añadir Salidas
 
-Las salidas declaran valores que desea que estén disponibles para una llamada a la API de stacks o a través de la pestaña Outputs (Salidas) del AWS CloudFormation una vez ejecutada la plantilla. En este laboratorio, se genera una salida con la URL del sitio web para que pueda ver fácilmente el sitio web una vez se haya creado. 
-En el panel del editor integrado, seleccione la pestaña Outputs (Salidas). Copie la siguiente salida JSON y péguela en editor integrado.
-{
-  "Outputs": {
-    "URL": {
-      "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "http://",
-            {
-              "Fn::GetAtt": [
-                "WebServerInstance",
-                "PublicIp"
-              ]
-            }
-          ]
-        ]
-      },
-      "Description": "Newly created application URL"
-    }
-  }
-}
+Las salidas declaran valores que desea que estén disponibles para una llamada a la API de stacks o a través de la pestaña Outputs (Salidas) del AWS CloudFormation una vez ejecutada la plantilla. En esta guía, se genera una salida con la URL del servidor web para que pueda ver fácilmente el sitio web una vez se haya creado. 
+
+En el panel del editor integrado, seleccione la pestaña Outputs (Salidas). Copie la siguiente salida YAML y péguela en editor integrado.
+
+``` YAML
+Outputs:
+  URL:
+    Value:
+      Fn::Join:
+      - ''
+      - - http://
+        - Fn::GetAtt:
+          - WebServerInstance
+          - PublicIp
+    Description: Newly created application URL
+```
 
 Al finalizar, debería tener la configuración de salidas (outputs) como se aprecia en la siguiente captura:
  
 
- 	RECUERDE GUARDAR LOS CAMBIOS!!!
-Especificar Propiedades de los recursos.
+## 5. Especificar Propiedades de los recursos.
 
 Muchos recursos necesitan especificar sus propiedades para definir sus configuraciones o ajustes, como, por ejemplo, el tipo de instancia que se debe utilizar para el servidor web. De forma similar a lo que hicimos en la sección anterior, vamos a utilizar el editor integrado de AWS CloudFormation Designer para especificar propiedades de los recursos. 
-Estas configuraciones, serán dadas por la guía para agilizar el proceso de ejecución de la plantilla. Siéntase en la libertad de copiar y pegar los fragmentos de código presentados en esta sección.
-Propiedades VPC.
 
-En el canvas de AWS CloudFormation Designer, elija el recurso VPC. El editor integrado muestra los componentes de nivel de recurso que puede editar, como, por ejemplo, las propiedades de recursos y atributos. En el panel del editor integrado, elija la pestaña Properties (Propiedades). Copie el siguiente fragmento de código JSON y péguelo en el editor integrado. Este fragmento de código especifica los ajustes de DNS y el bloque de CIDR de la VPC.
-"Properties": {
-                
-                        "EnableDnsSupport": "true",
-                        "EnableDnsHostnames": "true",
-                        "CidrBlock": "10.0.0.0/16"
-            }
-Las propiedades de la VPC deben quedar así:
- 
-Propiedades Subnet.
+Estas configuraciones, serán dadas por la guía para agilizar el proceso de ejecución de la plantilla. Siéntase en la libertad de copiar y pegar los fragmentos de código presentados en esta sección.}
+
+### Propiedades VPC.
+
+En el canvas de AWS CloudFormation Designer, elija el recurso VPC. El editor integrado muestra los componentes de nivel de recurso que puede editar, como, por ejemplo, las propiedades de recursos y atributos. En el panel del editor integrado, elija la pestaña Properties (Propiedades). Copie el siguiente fragmento de código YAML y péguelo en el editor integrado. Este fragmento de código especifica los ajustes de DNS y el bloque de CIDR de la VPC.
+
+``` YAML
+Properties:
+  EnableDnsSupport: 'true'
+  EnableDnsHostnames: 'true'
+  CidrBlock: 10.0.0.0/16
+  
+```
+## Propiedades Subnet.
 
 Agregue la siguiente propiedad del bloque de CIDR después de la propiedad del ID de VPC. AWS CloudFormation Designer añadió automáticamente la propiedad del ID de VPC cuando arrastró la subred dentro de la VPC.
 
-{
-    "Resources": {
-        "PublicSubnet": {
-            "Type": "AWS::EC2::Subnet",
-            "Properties": {
-                "VpcId": {
-                    "Ref": "VPC"
-                },
-                "CidrBlock": "10.0.0.0/24"
-            }
-        }
-    }
-}
+``` YAML
+Resources:
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: VPC
+      CidrBlock: 10.0.0.0/24
+```  
 
-Las propiedades de la subnet quedan cómo se aprecian a continuación:
- 
-Propiedades PublicRoute
+### Propiedades PublicRoute
 
 Agregue la siguiente propiedad de bloque de CIDR de destino, que dirige todo el tráfico a gateway de Internet en el recurso PublicRoute
-{
-    "Resources": {
-        "PublicRoute": {
-            "Type": "AWS::EC2::Route",
-            "Properties": {
-                "DestinationCidrBlock": "0.0.0.0/0",
-                "RouteTableId": {
-                    "Ref": "PublicRouteTable"
-                },
-                "GatewayId": {
-                    "Ref": "InternetGateway"
-                }
-            }
-        }
-    }
-}
-Debe observar las propiedades de la siguiente manera.
- 
-Propiedades Security Group.
+
+``` YAML
+Resources:
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      RouteTableId:
+        Ref: PublicRouteTable
+      GatewayId:
+        Ref: InternetGateway
+ ```       
+
+### Propiedades del Security Group.
 
 Añada las siguientes reglas entrantes que determinan el tráfico que puede llegar a la instancia del servidor web. Las reglas permiten todo el tráfico HTTP y determinado tráfico SSH. 
-{
-    "Resources": {
-        "WebServerSecurityGroup": {
-            "Type": "AWS::EC2::SecurityGroup",
-            "Properties": {
-                "VpcId": {
-                    "Ref": "VPC"
-                },
-                "GroupDescription": "Allow access from HTTP and SSH traffic",
-                "SecurityGroupIngress": [
-                    {
-                        "IpProtocol": "tcp",
-                        "FromPort": "80",
-                        "ToPort": "80",
-                        "CidrIp": "0.0.0.0/0"
-                    },
-                    {
-                        "IpProtocol": "tcp",
-                        "FromPort": "22",
-                        "ToPort": "22",
-                        "CidrIp": {
-                            "Ref": "SSHLocation"
-                        }
-                    }
-                ]
-            }
-        }
-    }
-}	
- 
-Propiedades Instancia WebServerInstance.
+
+``` YAML
+Resources:
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId:
+        Ref: VPC
+      GroupDescription: Allow access from HTTP and SSH traffic
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '80'
+        ToPort: '80'
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: '22'
+        ToPort: '22'
+        CidrIp:
+          Ref: SSHLocation
+ ``` 
+### Propiedades Instancia Web Server Instances.
 
 Ahora, se debe especificar un número de propiedades para la instancia del servidor web, por lo que vamos a configurar tan solo algunas propiedades para realizar este laboratorio. Las propiedades InstanceType e ImageId utilizan los valores de los parámetros y mapeos que especificamos en la sección anterior. 
 La propiedad NetworkInterfaces especifica los ajustes de red para la instancia del servidor web. Esta propiedad nos permite asociar el grupo de seguridad y la subred a la instancia. Aunque AWS CloudFormation Designer utilizó la propiedad SubnetId para asociar la instancia a la subred, tenemos que utilizar la propiedad NetworkInterfaces porque es la única forma de dar al servidor web una dirección IP pública. Cuando especifica la propiedad NetworkInterfaces, debe especificar la subred y el grupo de seguridad dentro de dicha propiedad.
