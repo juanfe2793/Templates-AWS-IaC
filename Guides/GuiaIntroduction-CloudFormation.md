@@ -40,12 +40,14 @@ Dicho archivo puede ser un JSON o YAML, a través del cual, se describe una infr
  
 ## 3. CloudFormation Design Tool – Añadir Recursos.
 
-Crear Stack.
+### Crear Stack.
 
 Lo primero es buscar el servicio de AWS CloudFormation dentro de los recursos de AWS. Una vez abierto el servicio, verá una ventana cómo la siguiente:
  
+ ![Ventana1](img/CloudFormation.png)
 
 Se aconseja dar clic en la opción: “Try it out now and provide us feedback”. Para trabajar con la interfaz actualizada. Una vez dentro, damos clic en la opción Create Stack, cómo se aprecia en la siguiente captura:
+ 
  
 Ahora seleccionamos la opción: “Crear un Template in Designer”. Está opción nos abrirá una nueva ventana a través de la cuál vamos a poder diseñar nuestra infraestructura AWS utilizando una aplicación web que nos permita insertar y conectar recursos de una manera muy simple.
 
