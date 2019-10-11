@@ -70,13 +70,13 @@ _IMAGEN_
 
 AWS CloudFormation Designer modifica inmediatamente la plantilla para incluir un recurso de VPC, los resultados tienen un aspecto similar al siguiente fragmento de código YAML.
 
-''' YAML
+``` YAML
 Resources:
   VPC:
     Type: 'AWS::EC2::VPC'
       Properties: {}
 
-'''
+```
 Adicionalmente, puede consultar la plantilla completa, presionando la pestaña template. 
 
 _IMAGEN_
