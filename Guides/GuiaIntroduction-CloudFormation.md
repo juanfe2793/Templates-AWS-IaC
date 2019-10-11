@@ -164,90 +164,92 @@ Al hacer clic en una zona abierta en el canvas esto le permite editar los compon
 En el panel de editor integrado, elija la pestaña Parameters (Parámetros) en la vista Components (Componentes). 
  
 
-El siguiente fragmento de código JSON añade parámetros para especificar el tipo de instancia del servidor web, un nombre de par de claves de Amazon EC2 para acceso de SSH al servidor web y el rango de direcciones IP que se puede utilizar para obtener acceso al servidor web mediante SSH.
-{
-  "Parameters": {
-    "InstanceType" : {
-      "Description" : "WebServer EC2 instance type",
-      "Type" : "String",
-      "Default" : "t2.micro",
-      "AllowedValues" : [ 
-        "t1.micro", 
-        "t2.nano", 
-        "t2.micro", 
-        "t2.small", 
-        "t2.medium", 
-        "t2.large", 
-        "m1.small", 
-        "m1.medium", 
-        "m1.large", 
-        "m1.xlarge", 
-        "m2.xlarge", 
-        "m2.2xlarge", 
-        "m2.4xlarge", 
-        "m3.medium", 
-        "m3.large", 
-        "m3.xlarge", 
-        "m3.2xlarge", 
-        "m4.large", 
-        "m4.xlarge", 
-        "m4.2xlarge", 
-        "m4.4xlarge", 
-        "m4.10xlarge", 
-        "c1.medium", 
-        "c1.xlarge", 
-        "c3.large", 
-        "c3.xlarge", 
-        "c3.2xlarge", 
-        "c3.4xlarge", 
-        "c3.8xlarge", 
-        "c4.large", 
-        "c4.xlarge", 
-        "c4.2xlarge", 
-        "c4.4xlarge", 
-        "c4.8xlarge", 
-        "g2.2xlarge", 
-        "g2.8xlarge", 
-        "r3.large", 
-        "r3.xlarge", 
-        "r3.2xlarge", 
-        "r3.4xlarge", 
-        "r3.8xlarge", 
-        "i2.xlarge", 
-        "i2.2xlarge", 
-        "i2.4xlarge", 
-        "i2.8xlarge", 
-        "d2.xlarge", 
-        "d2.2xlarge", 
-        "d2.4xlarge", 
-        "d2.8xlarge", 
-        "hi1.4xlarge", 
-        "hs1.8xlarge", 
-        "cr1.8xlarge", 
-        "cc2.8xlarge", 
-        "cg1.4xlarge"
-      ],
-      "ConstraintDescription" : "must be a valid EC2 instance type."
-    },
-    "KeyName": {
-      "Description": "Name of an EC2 KeyPair to enable SSH access to the instance.",
-      "Type": "AWS::EC2::KeyPair::KeyName",
-      "ConstraintDescription": "must be the name of an existing EC2 KeyPair."
-    },
-    "SSHLocation": {
-      "Description": " The IP address range that can be used to access the web server using SSH.",
-      "Type": "String",
-      "MinLength": "9",
-      "MaxLength": "18",
-      "Default": "0.0.0.0/0",
-      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
-      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
-    }
-  }
-}
+El siguiente fragmento de código YAML añade parámetros para especificar el tipo de instancia del servidor web, un nombre de par de claves de Amazon EC2 para acceso de SSH al servidor web y el rango de direcciones IP que se puede utilizar para obtener acceso al servidor web mediante SSH.
+
+``` YAML
+Parameters:
+  InstanceType:
+    Description: WebServer EC2 Tipo Instancia.
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+    - t1.micro
+    - t2.nano
+    - t2.micro
+    - t2.small
+    - t2.medium
+    - t2.large
+    - m1.small
+    - m1.medium
+    - m1.large
+    - m1.xlarge
+    - m2.xlarge
+    - m2.2xlarge
+    - m2.4xlarge
+    - m3.medium
+    - m3.large
+    - m3.xlarge
+    - m3.2xlarge
+    - m4.large
+    - m4.xlarge
+    - m4.2xlarge
+    - m4.4xlarge
+    - m4.10xlarge
+    - c1.medium
+    - c1.xlarge
+    - c3.large
+    - c3.xlarge
+    - c3.2xlarge
+    - c3.4xlarge
+    - c3.8xlarge
+    - c4.large
+    - c4.xlarge
+    - c4.2xlarge
+    - c4.4xlarge
+    - c4.8xlarge
+    - g2.2xlarge
+    - g2.8xlarge
+    - r3.large
+    - r3.xlarge
+    - r3.2xlarge
+    - r3.4xlarge
+    - r3.8xlarge
+    - i2.xlarge
+    - i2.2xlarge
+    - i2.4xlarge
+    - i2.8xlarge
+    - d2.xlarge
+    - d2.2xlarge
+    - d2.4xlarge
+    - d2.8xlarge
+    - hi1.4xlarge
+    - hs1.8xlarge
+    - cr1.8xlarge
+    - cc2.8xlarge
+    - cg1.4xlarge
+    ConstraintDescription: Ingrese un valor de EC2 valido.
+```
+Poner Texto Aquí.
+
+
+  KeyName:
+    Description: Seleccione el nombre de una KeyPair para acceso a través de SSH.
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: Debe seleccionar una llave existente.
+  SSHLocation:
+    Description: " El rango de direcciones IP que se puede usar para acceder al servidor web usando SSH."
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 0.0.0.0/0
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+    ConstraintDescription: Debe ingresar una IP valida x.x.x.x/x.
+
+```
 
 Después de copiar los parámetros, la plantilla deberá verse de la siguiente manera:
- 
+
+_IMAGEN_
 
 Añadir Mapeos.
 
