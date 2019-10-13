@@ -1,25 +1,30 @@
- 	
+# Guía Introdución a Cloud Formation
 
-# Guía Introdución a Cloud Formation.
 ## Contenido
 
 1. Objetivo Práctica Laboratorio.
 2. Descripción Cloud Formation.
 3. CloudFormation Design Tool – Añadir Recursos.
+  
   * Crear Stack.
   * Añadir VPC y recursos EC2.
   * Conectar Recursos.
+
 4. Configuración Parámetros, mapeos y salidas.
+
   * Añadir Parámetros.
   * Añadir Mapeos.
   * Añadir Salidas.
+
 5. Especificar Propiedades de los recursos.
+
   * Propiedades VPC.
   * Propiedades Subnet.
   * Propiedades PublicRoute.
   * Propiedades Security Group.
   * Propiedades Instancia WebServerInstance.
   * Metadatos Instancia WebServerInstance.
+  
 6. Validar Plantilla.
 7. Crear Stack y Ejecutar Plantilla.
 8. Validación y Pruebas.
@@ -31,42 +36,42 @@
 DESPLIEGUE infraestructura Amazon Web Services utilizando la herramienta Amazon Cloud Formation.
 Cloud Formation
 
-## 2. Descripción Cloud Formation. 
+## 2. Descripción Cloud Formation
 
-CloudFormation permite usar un archivo de texto simple para modelar y aprovisionar, de una manera segura y automatizada, todos los recursos necesarios para las aplicaciones en todas las regiones y cuentas. 
-Dicho archivo puede ser un JSON o YAML, a través del cual, se describe una infraestructura AWS y su comportamiento. Con AWS CloudFormation es posible desarrollar Infraestructura cómo código (IaaC). El siguiente  diagrama describe el funcionamiento general de AWS CloudFormation: 
+CloudFormation permite usar un archivo de texto simple para modelar y aprovisionar, de una manera segura y automatizada, todos los recursos necesarios para las aplicaciones en todas las regiones y cuentas.
+Dicho archivo puede ser un JSON o YAML, a través del cual, se describe una infraestructura AWS y su comportamiento. Con AWS CloudFormation es posible desarrollar Infraestructura cómo código (IaaC). El siguiente  diagrama describe el funcionamiento general de AWS CloudFormation:
 
 ![Diagrama1](img/FuncionamientoCloudFormation.png)
- 
-## 3. CloudFormation Design Tool – Añadir Recursos.
 
-### Crear Stack.
+## 3. CloudFormation Design Tool – Añadir Recursos
 
+### Crear Stack
 
 Lo primero es buscar el servicio de AWS CloudFormation dentro de los recursos de AWS. Una vez abierto el servicio, verá una ventana cómo la siguiente:
- 
+
  ![Ventana1](img/CloudFormation.png)
- 
- 
+
+Una vez adentro de CloudFormation, damos clic en la opción **Crear Stack**
+
+ ![CrearStack](img/CreateStack.png)
+
 Ahora seleccionamos la opción: “Crear un Template in Designer”. Está opción nos abrirá una nueva ventana a través de la cuál vamos a poder diseñar nuestra infraestructura AWS utilizando una aplicación web que nos permita insertar y conectar recursos de una manera muy simple.
 
- 
-_IMAGEN_
- 
+ ![Designer](img/Designer.png)
 
-Con esta herramienta iremos creando paso a paso una plantilla que nos permita automatizar el proceso de creación de una infraestructura en AWS. Para iniciar, vamos a cambiar el nombre de la plantilla por BasicWebServerInVPC. 
+ ![Designer](img/DesignerOpen.png)
 
-_IMAGEN_
+Con esta herramienta iremos creando paso a paso una plantilla que nos permita automatizar el proceso de creación de una infraestructura en AWS. Para iniciar, vamos a cambiar el nombre de la plantilla por BasicWebServerInVPC.
 
-**Es importante que usted considere revisar los nombres de los recursos durante el desarrollo de este laboratorio**. Por último, se aclara que la herramienta de Cloud Formation Designer no guarda de manera automatica los avances y falla si existen errores de sintaxis en la construcción de la plantilla. 
+ ![TemplateName](img/ChangeTemplateName.png)
 
- 
-### Añadir VPC y recursos EC2.
+**Es importante que usted considere revisar los nombres de los recursos durante el desarrollo de este laboratorio**. Por último, se aclara que la herramienta de Cloud Formation Designer no guarda de manera automatica los avances y falla si existen errores de sintaxis en la construcción de la plantilla.
 
-Ahora vamos a empezar a agregar los recursos al lienzo en blanco. En el panel Resource types (Tipos de recursos), desde la categoría EC2, arrastre un tipo de recurso VPC hacia el panel Canvas (Lienzo). En este punto, usted debe haber notado que los recursos están organizados por categorías de recursos, y que se encuentran todos los posibles recursos de AWS. 
+### Añadir VPC y recursos EC2
 
- 
-_IMAGEN_
+Ahora vamos a empezar a agregar los recursos al lienzo en blanco. En el panel Resource types (Tipos de recursos), desde la categoría EC2, arrastre un tipo de recurso VPC hacia el panel Canvas (Lienzo). En este punto, usted debe haber notado que los recursos están organizados por categorías de recursos, y que se encuentran todos los posibles recursos de AWS.
+
+ ![AddVPC](img/AddVPC.png)
 
 AWS CloudFormation Designer modifica inmediatamente la plantilla para incluir un recurso de VPC, los resultados tienen un aspecto similar al siguiente fragmento de código YAML.
 
@@ -77,94 +82,76 @@ Resources:
       Properties: {}
 
 ```
-Adicionalmente, puede consultar la plantilla completa, presionando la pestaña template. 
 
-_IMAGEN_
- 
+Adicionalmente, puede consultar la plantilla completa, presionando la pestaña template.
+
+ ![GoToTemplate](img/GoToTemplate.png)
+
 Ahora cambie el nombre de la **VPC** a _VPC_
 
-_IMAGEN_
+Una vez cambiado el nombre, tenemos que añadir una subred para poder asociar una instancia EC2, que aloja el sitio web. Recuerde que las instancias deben estar en una subred. Añada un tipo de recurso **Subnet** dentro de la VPC y cámbiele el nombre por _PublicSubnet_. Cuando añade la subred dentro de la VPC, AWS CloudFormation Designer asocia automáticamente la subred con la VPC. Esta asociación es un modelo de contenedor, donde los recursos dentro del contenedor se asocian automáticamente. Al final de este punto debe tener la plantilla de esta manera:
 
-Una vez cambiado el nombre, tenemos que añadir una subred para poder asociar una instancia EC2, que aloja el sitio web. Recuerde que las instancias deben estar en una subred. Añada un tipo de recurso **Subnet** dentro de la VPC y cámbiele el nombre por PublicSubnet.
+![AddSubnet](img/AddSubnet.png)
 
-_IMAGEN_
+Añada un tipo de recurso **Instance** dentro del recurso PublicSubnet y cámbiele el nombre por _WebServerInstance_. De forma similar a la forma en que esto funcionó con la subred y la VPC, la adición de la instancia en la subred asocia automáticamente la instancia con la subred.
+_
+Añada un tipo de recurso **SecurityGroup** dentro de la VPC y cámbiele el nombre por _WebServerSecurityGroup_. El grupo de seguridad es un firewall virtual que controla el tráfico entrante y saliente de la instancia del servidor web. También es necesario para las instancias de una VPC.
 
-Cuando añade la subred dentro de la VPC, AWS CloudFormation Designer asocia automáticamente la subred con la VPC. Esta asociación es un modelo de contenedor, donde los recursos dentro del contenedor se asocian automáticamente. Al final de este punto debe tener la plantilla de esta manera:
- 
- _IMAGEN_
- 
-Añada un tipo de recurso **Instance** dentro del recurso PublicSubnet y cámbiele el nombre por _WebServerInstance_. De forma similar a la forma en que esto funcionó con la subred y la VPC, la adición de la instancia en la subred asocia automáticamente la instancia con la subred. Una vez modificado el nombre, la plantilla debe quedar de la siguiente manera:
-
-_IMAGEN_
- 
-
-Añada un tipo de recurso **SecurityGroup** dentro de la VPC y cámbiele el nombre por _WebServerSecurityGroup_. El grupo de seguridad es un firewall virtual que controla el tráfico entrante y saliente de la instancia del servidor web. También es necesario para las instancias de una VPC. 
-
-_IMAGEN_
+![AddSG](img/AddSG.png)
 
 Adicionalmente, añada un tipo de recurso **InternetGateway** en cualquier lugar fuera de la VPC y cámbiele el nombre por _InternetGateway_. El Internet Gateway permite la comunicación entre la instancia que está dentro de la VPC e Internet. Sin este recurso, nadie puede obtener acceso a su sitio web. En este punto del laboratorio, deberá tener el siguiente diagrama en el canvas:
- 
- _IMAGEN_
 
 A continuación, debemos añadir una tabla de ruteo y una ruta para especificar cómo dirigir el tráfico de la red desde una subred. Añada una **RouteTable** dentro de la VPC y cámbiele el nombre por PublicRouteTable.
 
-_IMAGEN_
-
 Para añadir una regla de enrutamiento en la tabla de ruteo, añada un tipo de recurso **Route** dentro del recurso PublicRouteTable y cámbiele el nombre por _PublicRoute_. Utilizaremos la ruta para especificar hacia dónde dirigir el tráfico.
+
 En este punto, su diagrama de infraestructura debe verse de la siguiente manera:
 
-_IMAGEN_
+![Canva](img/Canva-V1.png)
 
-
-### Conectar Recursos.
+### Conectar Recursos
 
 Ahora debemos empezar a gestionar las conexiones entre recursos. Con esto definimos el comportamiento de la VPC y cómo serán tratados los paquetes. En el recurso **InternetGateway**, coloque el cursor sobre la vinculación de la gateway de Internet **(AWS::EC2::VPCGatewayAttachment)**. Arrastre una conexión a la VPC. Cabe resaltar, que el borde de los recursos de destino válidos cambia a color verde. En este caso, la VPC es el único recurso de destino válido. La conexión debe verse de la siguiente manera:
- 
-_IMAGEN_
 
+![IG-VPC](img/IG-Connect-VPC.png)
 
- 
 Para la ruta pública, queremos que el gateway de Internet sea el destino por defecto. Utilice **GatewayId** para crear una conexión desde el recurso PublicRoute al gateway de Internet. Este proceso se aprecia en la siguiente captura de pantalla:
- 
-_IMAGEN_
 
-AWS CloudFormation no puede asociar una ruta al gateway de Internet si no se ha realizado la conexión entre el Gateway de Internet y la VPC. Esto significa que tenemos que crear una dependencia explícita en la vinculación gateway de Internet-VPC. Con este proceso, nos aseguramos que nuestros recursos se creen de manera correcta una vez ejecutada nuestra plantilla. 
+![Config-Route](img/Config-Route.png)
 
-En el recurso **PublicRoute**, pase el ratón por encima del punto **DependsOn**. Arrastre una conexión a la vinculación gateway de Internet-VPC (AWS::EC2::VPCGatewayAttachment). Con conexiones DependsOn, AWS CloudFormation Designer crea una dependencia (un atributo DependsOn), donde el recurso de origen depende del recurso de destino. 
+AWS CloudFormation no puede asociar una ruta al gateway de Internet si no se ha realizado la conexión entre el Gateway de Internet y la VPC. Esto significa que tenemos que crear una dependencia explícita en la vinculación gateway de Internet-VPC. Con este proceso, nos aseguramos que nuestros recursos se creen de manera correcta una vez ejecutada nuestra plantilla.
 
-Al finalizar tendrá el diagrama de la siguiente manera:
+![Config-Relation](img/ConfigureRelations.png)
 
-_IMAGEN_
- 
-Ahora, cree otra dependencia desde el recurso WebServerInstance al recurso PublicRoute. El recurso WebServerInstance depende de la ruta pública para dirigir el tráfico a través de Internet. Dicha conexión modifica el diagrama así:
- 
-_IMAGEN_
+En el recurso **PublicRoute**, pase el ratón por encima del punto **DependsOn**. Arrastre una conexión a la vinculación gateway de Internet-VPC (AWS::EC2::VPCGatewayAttachment). Con conexiones DependsOn, AWS CloudFormation Designer crea una dependencia (un atributo DependsOn), donde el recurso de origen depende del recurso de destino. Ahora, cree otra dependencia desde el recurso WebServerInstance al recurso PublicRoute. El recurso WebServerInstance depende de la ruta pública para dirigir el tráfico a través de Internet. Dicha conexión modifica el diagrama así:
 
+![DependsOn](img/DependsOn.png)
 
 Por último, cree una conexión desde el recurso **PublicRouteTable** al recurso **PublicSubnet** para asociar la tabla de ruteo y la subred. Ahora la subred pública utilizará la tabla de ruteo público para dirigir el tráfico. De esta manera, el diagrama final de nuestra infraestructura AWS y sus relaciones será la siguiente:
 
-_IMAGEN_
- 
-Puede guardar los avances de la plantilla, haciendo clic en la sección archivo -> save -> Local File. Como se aprecia en las siguientes capturas:
- 
-_IMAGEN_
- 
+![Final_Canva](img/Final-Canva.png)
 
-## 4. Configuración Parámetros, mapeos y salidas.
+Puede guardar los avances de la plantilla, haciendo clic en la sección archivo -> save -> Local File. Como se aprecia en las siguientes capturas:
+
+![Save](img/Save.png)
+
+## 4. Configuración Parámetros, mapeos y salidas
 
 Antes de especificar las propiedades de los recursos, tenemos que añadir otros componentes a nuestra plantilla para que resulte más fácil reutilizar la plantilla en futuras ocasiones. En este paso, vamos a utilizar el editor integrado de AWS CloudFormation Designer para añadir parámetros, mapeos y salidas. Estos parámetros, mapeos y salidas, son valores genéricos de AWS, por lo que siéntase en la libertad de copiar y pegar los fragmentos de código presentados en esta sección.
 
-### Añadir Parámetros.
+### Añadir Parámetros
 
 Los parámetros son valores de entrada que se especifican al momento de crear una pila (Ejecución de la Plantilla). Son útiles para evitar tener valores codificados de forma rígida en las plantillas. Por ejemplo, no es necesario codificar de manera rígida el tipo de instancia del servidor web en la plantilla; en su lugar, puede utilizar un parámetro para especificar el tipo de instancia (t2.micro, t2.medium, entre otros). De esta forma, puede utilizar la misma plantilla para crear varios servidores web con diferentes tipos de instancias.
 
-En AWS CloudFormation Designer, existen 2 niveles de edición: el nivel de plantilla y el nivel de recursos. En el nivel de la plantilla, puede editar el resto de las secciones de una plantilla, como, por ejemplo, los parámetros, mapeos y salidas de la plantilla, excepto la sección Resources. En el nivel de recursos, puede editar las propiedades de recursos y atributos.
+En AWS CloudFormation Designer, existen 2 niveles de edición: el nivel de plantilla y el nivel de recursos. En el nivel de la plantilla, puede editar el resto de las secciones de una plantilla, como, por ejemplo, los parámetros, mapeos y salidas de la plantilla. En el nivel de recursos, puede editar las propiedades de recursos y atributos.
 
-Al hacer clic en una zona abierta en el canvas esto le permite editar los componentes de nivel de plantilla. Para editar los componentes de nivel de recursos, seleccione un recurso. En el panel de editor integrado, elija la pestaña Parameters (Parámetros) en la vista Components (Componentes). 
- 
+Al hacer clic en una zona abierta en el canvas esto le permite editar los componentes de nivel de plantilla. Para editar los componentes de nivel de recursos, seleccione un recurso. En el panel de editor integrado, elija la pestaña Parameters (Parámetros) en la vista Components (Componentes).
+
+![Components](img/Components.png)
+
 Existen varias maneras de solicitar parámetros en una plantilla de Cloud Formation: la primera, con una lista desplegable limitada; la segunda con objetos existentes dentro de la cuenta de Amazon; la tercera, con una cadena de caracteres que ingrese el usuario, validando un formato especifico.
 
-El siguiente fragmento de código YAML añade parámetros para especificar el tipo de instancia del servidor web, como una lista desplegable limitada. 
+El siguiente fragmento de código YAML añade parámetros para especificar el tipo de instancia del servidor web, como una lista desplegable limitada.
 
 ``` YAML
 Parameters:
@@ -230,7 +217,7 @@ Parameters:
     ConstraintDescription: Ingrese un valor de EC2 valido.
 ```
 
-El siguiente fragmento de código YAML añade parámetros para especificar un nombre de par de claves de Amazon EC2 para acceso de SSH al servidor web 
+El siguiente fragmento de código YAML añade parámetros para especificar un nombre de par de claves de Amazon EC2 para acceso de SSH al servidor web.
 
 ``` YAML
   KeyName:
@@ -252,14 +239,15 @@ SSHLocation:
     ConstraintDescription: Debe ingresar una IP valida x.x.x.x/x.
 ```
 
-### Añadir Mapeos.
+### Añadir Mapeos
 
-Los mapeos son un conjunto de claves que se asocian a un conjunto de pares de nombre-valor. Son útiles para especificar valores según parámetro de entrada. En este tutorial, utilizaremos un mapeo para especificar un ID de AMI para una instancia EC2 en función del tipo de instancia y la región en la que se crea la pila. 
+Los mapeos son un conjunto de claves que se asocian a un conjunto de pares de nombre-valor. Son útiles para especificar valores según parámetro de entrada. En este tutorial, utilizaremos un mapeo para especificar un ID de AMI para una instancia EC2 en función del tipo de instancia y la región en la que se crea la pila.
 
-En el panel del editor integrado, elija la pestaña Mappings (Mapeos). Copie los siguientes mapeos de JSON y péguelos en editor integrado.
+![Mappings](img/Mappings.png)
+
+En el panel del editor integrado, elija la pestaña Mappings (Mapeos). Copie los siguientes mapeos de YAML y péguelos en editor integrado.
 
 ``` YAML
----
 Mappings:
   AWSInstanceType2Arch:
     t1.micro:
@@ -424,9 +412,12 @@ Mappings:
       HVM64: ami-6b6a7d09
       HVMG2: NOT_SUPPORTED
 ```
+
 ### Añadir Salidas
 
-Las salidas declaran valores que desea que estén disponibles para una llamada a la API de stacks o a través de la pestaña Outputs (Salidas) del AWS CloudFormation una vez ejecutada la plantilla. En esta guía, se genera una salida con la URL del servidor web para que pueda ver fácilmente el sitio web una vez se haya creado. 
+Las salidas declaran valores que desea que estén disponibles para una llamada a la API de stacks o a través de la pestaña Outputs (Salidas) del AWS CloudFormation una vez ejecutada la plantilla. En esta guía, se genera una salida con la URL del servidor web para que pueda ver fácilmente el sitio web una vez se haya creado.
+
+![Outputs](img/Outputs.png)
 
 En el panel del editor integrado, seleccione la pestaña Outputs (Salidas). Copie la siguiente salida YAML y péguela en editor integrado.
 
@@ -443,16 +434,13 @@ Outputs:
     Description: Newly created application URL
 ```
 
-Al finalizar, debería tener la configuración de salidas (outputs) como se aprecia en la siguiente captura:
- 
+## 5. Especificar Propiedades de los recursos
 
-## 5. Especificar Propiedades de los recursos.
-
-Muchos recursos necesitan especificar sus propiedades para definir sus configuraciones o ajustes, como, por ejemplo, el tipo de instancia que se debe utilizar para el servidor web. De forma similar a lo que hicimos en la sección anterior, vamos a utilizar el editor integrado de AWS CloudFormation Designer para especificar propiedades de los recursos. 
+Muchos recursos necesitan especificar sus propiedades para definir sus configuraciones o ajustes, como, por ejemplo, el tipo de instancia que se debe utilizar para el servidor web. De forma similar a lo que hicimos en la sección anterior, vamos a utilizar el editor integrado de AWS CloudFormation Designer para especificar propiedades de los recursos.
 
 Estas configuraciones, serán dadas por la guía para agilizar el proceso de ejecución de la plantilla. Siéntase en la libertad de copiar y pegar los fragmentos de código presentados en esta sección.}
 
-### Propiedades VPC.
+### Propiedades VPC
 
 En el canvas de AWS CloudFormation Designer, elija el recurso VPC. El editor integrado muestra los componentes de nivel de recurso que puede editar, como, por ejemplo, las propiedades de recursos y atributos. En el panel del editor integrado, elija la pestaña Properties (Propiedades). Copie el siguiente fragmento de código YAML y péguelo en el editor integrado. Este fragmento de código especifica los ajustes de DNS y el bloque de CIDR de la VPC.
 
@@ -463,7 +451,10 @@ Properties:
   CidrBlock: 10.0.0.0/16
   
 ```
-## Propiedades Subnet.
+
+![Properties](img/Properties.png)
+
+## Propiedades Subnet
 
 Agregue la siguiente propiedad del bloque de CIDR después de la propiedad del ID de VPC. AWS CloudFormation Designer añadió automáticamente la propiedad del ID de VPC cuando arrastró la subred dentro de la VPC.
 
@@ -476,6 +467,8 @@ Resources:
         Ref: VPC
       CidrBlock: 10.0.0.0/24
 ```  
+
+![Subnet](img/Subnet-Properties.png)
 
 ### Propiedades PublicRoute
 
@@ -491,11 +484,13 @@ Resources:
         Ref: PublicRouteTable
       GatewayId:
         Ref: InternetGateway
- ```       
+ ```
 
-### Propiedades del Security Group.
+![Routes](img/Routes-Properties.png)
 
-Añada las siguientes reglas entrantes que determinan el tráfico que puede llegar a la instancia del servidor web. Las reglas permiten todo el tráfico HTTP y determinado tráfico SSH. 
+### Propiedades del Security Group
+
+Añada las siguientes reglas entrantes que determinan el tráfico que puede llegar a la instancia del servidor web. Las reglas permiten todo el tráfico HTTP y determinado tráfico SSH.
 
 ``` YAML
 Resources:
@@ -515,14 +510,17 @@ Resources:
         ToPort: '22'
         CidrIp:
           Ref: SSHLocation
- ``` 
-### Propiedades Instancia Web Server Instances.
+ ```
 
-Ahora, se debe especificar un número de propiedades para la instancia del servidor web, por lo que vamos a configurar tan solo algunas propiedades para realizar este laboratorio. Las propiedades **InstanceType** e **ImageId** utilizan los valores de los parámetros y mapeos que especificamos en la sección anterior. 
+![SG](img/SG-Properties.png)
 
-La propiedad **NetworkInterfaces** especifica los ajustes de red para la instancia del servidor web. Esta propiedad nos permite asociar el grupo de seguridad y la subred a la instancia. Aunque AWS CloudFormation Designer utilizó la propiedad **SubnetId** para asociar la instancia a la subred. 
+### Propiedades Instancia Web Server Instances
 
-En la propiedad UserData, se especifican los scripts de configuración que se ejecutan una vez que la instancia está operativa, es decir, apenas inicia la instancia. Toda la información de configuración se define en los metadatos de la instancia, que añadiremos en el siguiente paso.
+Ahora, se debe especificar un número de propiedades para la instancia del servidor web, por lo que vamos a configurar tan solo algunas propiedades para realizar este laboratorio. Las propiedades **InstanceType** e **ImageId** utilizan los valores de los parámetros y mapeos que especificamos en la sección anterior.
+
+La propiedad **NetworkInterfaces** especifica los ajustes de red para la instancia del servidor web. Esta propiedad nos permite asociar el grupo de seguridad y la subred a la instancia. Aunque AWS CloudFormation Designer utilizó la propiedad **SubnetId** para asociar la instancia a la subred.
+
+En la propiedad **UserData**, se especifican los scripts de configuración que se ejecutan una vez que la instancia está operativa, es decir, apenas inicia la instancia. Toda la información de configuración se define en los metadatos de la instancia, que añadiremos en el siguiente paso.
 
 Sustituya todas las propiedades por el siguiente fragmento de código:
 
@@ -578,7 +576,7 @@ Resources:
             - "\n"
 ```
 
-### Metadatos Instancia WebServerInstance.
+### Metadatos Instancia WebServerInstance
 
 Elija el recurso **WebServerInstance** y, a continuación, elija la pestaña Metadata (Metadatos) en el panel del editor integrado. Los Metadatos deben quedar de la siguiente manera:
 
@@ -614,73 +612,54 @@ Resources:
                 ensureRunning: 'true'
 ```
 
+![WebServer](img/WebServer-Instance.png)
 
-## 6. Validar Plantilla.
+## 6. Validar Plantilla
 
 Ahora ya tendríamos lista nuestra plantilla para ejecución, sólo nos hace falta un paso. El último paso es validar que nuestra plantilla se encuentre correcta, utilizando el botón validar template cómo se aprecia en la siguiente captura.
 
-_IMAGEN_
- 
-Si hemos seguido cada uno de los pasos de esta guía tendremos el siguiente mensaje:
- 
+![Valid](img/ValidTemplate.png)
 
-
-
-
-## 7. Crear Stack y Ejecutar Plantilla.
+## 7. Crear Stack y Ejecutar Plantilla
 
 Una vez terminada la creación de la plantilla, ya podremos realizar la ejecución de la misma para crear nuestra infraestructura AWS de manera automática a través del AWS CloudFormation. Para iniciar el proceso de ejecución, damos clic en la opción crear stack:
 
-_IMAGEN_
+![UploadStack](img/Upload-Stack.png)
 
 Nos aparecerá el siguiente menú, dónde seleccionaremos utilizar un template y subir un template file. Aquí subiremos la plantilla que acabamos de desarrollar:
 
-_IMAGEN_ 
- 
-Algo importante que debe considerarse, es que Amazon Web Services creará un nuevo Bucket S3 para guardar el template, así, puede utilizarlo en un futuro de manera muy rápida. Guarde este enlace para descargar y modificar su plantilla en el futuro. 
+![UploadTemplate](img/UploadTemplate2.png)
 
-En la sección Specify Details (Especificar detalles), introduzca un nombre de pila en el campo Stack name (Nombre de pila). Para este ejemplo, use **BasicWebServerStack**.
+Algo importante que debe considerarse, es que Amazon Web Services creará un nuevo Bucket S3 para guardar el template, así, puede utilizarlo en un futuro de manera muy rápida. Guarde este enlace para descargar y modificar su plantilla en el futuro.
 
+En la sección Specify Details (Especificar detalles), introduzca un nombre de pila en el campo Stack name (Nombre de pila). Para este ejemplo, use **BasicWebServerStack**. Los parámetros, que vemos en la creación del stack, son los que definimos previamente en la plantilla. Seleccione el tipo de instancia que está dispuesto a pagar, el nombre de las llaves a utilizar y la configuración de las reglas SSH.
 
-Los parámetros, que vemos en la creación del stack, son los que definimos previamente en la plantilla. Seleccione el tipo de instancia que está dispuesto a pagar, el nombre de las llaves a utilizar y la configuración de las reglas SSH. En esté caso, maneje la configuración cómo aparece a continuación:
-
-_IMAGEN_
-
- 
 Damos clic en Next, y nos aparece la ventana para configurar las opciones de nuestro stack. Podemos configurar las etiquetas, roles IAM, políticas, configuraciones de rollback y demás opciones que podemos dejar en blanco en este momento.
-
-_IMAGEN_
 
 Por último, validamos toda la información que nos muestra AWS CloudFormation y damos click en Create Stack. Nos aparece el siguiente mensaje:
 
-_IMAGEN_
- 
+![Events](img/Events.png)
+
 Por ahora sólo debemos esperar que nuestro template se ejecute y al final podremos ver que nuestra infraestructura de AWS se encuentra operativa.
 
-_IMAGEN_
-
-## 8. Validación y Pruebas.
+## 8. Validación y Pruebas
 
 Si todo sale bien, obtendremos el siguiente mensaje:
 
-_IMAGEN_
- 
-Ingresando a la dirección IP que nos muestra desde el Output, obtendremos:
+![FinishTemplate](img/Finish-Template.png)
 
-_IMAGEN_
+![OutPuts-Stack](img/OutPuts-Stack.png)
 
-Demostrando que nuestro Templete se ejecuta de manera correcta. 
+Ingresando a la dirección IP que nos muestra desde el Output, podremos acceder a nuestro sitio web de prueba. Demostrando que nuestro Templete se ejecuta de manera correcta.
 
-_IMAGEN_
+Para finalizar Validamos que todos nuestros recursos se crean de manera correcta.
 
+![VPC](img/VPC-Finish.png)
+![SubnetFinish](img/SubNet-Finish.png)
+![Finish](img/Instance-Finish.png)
 
-Para finalizar Validamos que todos nuestros recursos se crean de manera correcta.  
+De esta manera, logramos terminar el desarrollo de una plantilla de IaC para desplegar de manera automática infraestructura de Amazon Web Service.
 
-_IMAGEN_ 
- 
- 
- 
-## 9. Referencias 
+## 9. Referencias
 
-Amazon Web Services. (2019). Tutorial: Procedimiento de creación de un servidor web básico con AWS CloudFormation Designer. Obtenido de https://docs.aws.amazon.com/es_es/AWSCloudFormation/latest/UserGuide/working-with-templates-cfn-designer-walkthrough-createbasicwebserver.html
-
+Amazon Web Services. (2019). Tutorial: Procedimiento de creación de un servidor web básico con AWS CloudFormation Designer. Obtenido de <https://docs.aws.amazon.com/es_es/AWSCloudFormation/latest/UserGuide/working-with-templates-cfn-designer-walkthrough-createbasicwebserver.html>
