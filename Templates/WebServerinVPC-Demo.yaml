@@ -69,7 +69,7 @@ Resources:
         id: 47e463f6-cf95-42ec-ad82-724f24be7762
   WebTest:
     Type: 'AWS::EC2::Instance'
-     Properties:
+    Properties:
       InstanceType: !Ref InstanceType
       ImageId: !FindInMap 
         - AWSRegionArch2AMI
@@ -86,33 +86,23 @@ Resources:
           DeviceIndex: '0'
           DeleteOnTermination: 'true'
           SubnetId: !Ref PublicSubnet
-      UserData: !Base64 
-        'Fn::Join':
-          - ''
-          - - |
-              #!/bin/bash -xe
-            - |
-              yum install -y aws-cfn-bootstrap
-            - |
-              # Install the files and packages from the metadata
-            - '/opt/aws/bin/cfn-init -v '
-            - '         --stack '
-            - !Ref 'AWS::StackName'
-            - '         --resource WebServerInstance '
-            - '         --configsets All '
-            - '         --region '
-            - !Ref 'AWS::Region'
-            - |+
-
-            - |
-              # Signal the status from cfn-init
-            - '/opt/aws/bin/cfn-signal -e $? '
-            - '         --stack '
-            - !Ref 'AWS::StackName'
-            - '         --resource WebServerInstance '
-            - '         --region '
-            - !Ref 'AWS::Region'
-            - |+
+      UserData: 
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          yum update -y 
+          yum install -y httpd php aws-cfn-bootstrap
+          #amazon-linux-extras install -y php7.2
+          # Install the files and packages from the metadata
+          #/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource WebServerInstance --configsets All --region ${AWS::Region}
+          # Signal the status from cfn-init
+          #/opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WebServerInstance --region ${AWS::Region}
+          wget https://us-west-2-tcprod.s3.amazonaws.com/courses/AWS-100-CCA/v3.1.21/lab8-ha/scripts/phpapp.zip
+          unzip phpapp.zip -d /var/www/html/
+          chkconfig httpd on
+          service httpd start
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: f05d419d-9129-4547-9eba-bfd38fe74f2e
       'AWS::CloudFormation::Init':
         configSets:
           All:
@@ -121,22 +111,6 @@ Resources:
           packages:
             yum:
               httpd: []
-          files:
-            /var/www/html/index.html:
-              content: !Join 
-                - |+
-
-                - - >-
-                    <h1>Congratulations, you have successfully launched the AWS
-                    CloudFormation sample.</h1>
-              mode: '000644'
-              owner: root
-              group: root
-          services:
-            sysvinit:
-              httpd:
-                enabled: 'true'
-                ensureRunning: 'true'
     DependsOn:
       - PublicRoute
 
