@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
   Plantilla Despliegue Infraestructura Seleccionando todo: Esta plantilla crea un stack LAMP
-  utilizando una instancia de EC2 con S.O. Red Hat Enterprise. 
+  utilizando una instancia de EC2
   Solo permite el despliegue en regiones de Estados Unidos. 
   Los parametros de VPC, security group, KeyPair, Nombre, Etiquetas
   son elegidas por los usuarios. Adcionalmente, se crea un Bucket S3.
@@ -13,7 +13,7 @@ Parameters:
     ConstraintDescription: Debe seleccionar una Subred existente.
   SecurityGroup:
     Description: Seleccione el grupo de seguridad para desplegar la instancia EC2.
-    Type: AWS::EC2::SecurityGroup::GroupName
+    Type: AWS::EC2::SecurityGroup::Id
     ConstraintDescription: Debe seleccionar un grupo de seguridad existente.
   ProjectTag:
     Description: Escriba el nombre de la etiqueta de proyecto para configurar la instancia EC2.
@@ -201,16 +201,14 @@ Mappings:
       Arch: HVM64
   AWSRegionArch2AMI:
     us-east-1:
-      HVM64: ami-0c322300a1dd5dc79
-      HVMG2: ami-03587fa4048e9eb92
-    us-east-2:
-      HVM64: ami-0520e698dd500b1d1
-      HVMG2: ami-0099847d600887c9f
-    us-west-1:
-      HVM64: ami-00fc224d9834053d6
+      HVM64: ami-0ff8a91507f77f867
+      HVMG2: ami-0a584ac55a7631c0c
     us-west-2:
-      HVM64: ami-00fc224d9834053d6
-      HVM64: ami-047f9f2f5072dd073
+      HVM64: ami-a0cfeed8
+      HVMG2: ami-0e09505bc235aa82d
+    us-west-1:
+      HVM64: ami-0bdb828fd58c52235
+      HVMG2: ami-066ee5fd4a9ef77f1
 
 Resources:
   WebApp:
@@ -243,19 +241,14 @@ Resources:
           yum update -y 
           #Instala los componentes base
           yum install -y httpd php aws-cfn-bootstrap 
-          dnf install openssh-server
-          amazon-linux-extras install -y php7.2
-          #Install java
-          dnf install java-11-openjdk-devel
-          dnf install python3
+          amazon-linux-extras install -y php7.2 java-openjdk11
+          yum install -y python36
+          #Descarga Aplicación Prueba
+          wget https://us-west-2-tcprod.s3.amazonaws.com/courses/AWS-100-CCA/v3.1.21/lab8-ha/scripts/phpapp.zip
+          unzip phpapp.zip -d /var/www/html/
           #Se realiza la configuración para iniciar los servicios
           chkconfig httpd on
-          systemctl start sshd
-          systemctl enable sshd
           service httpd start
-          # Apertura del puerto 22
-          firewall-cmd --zone=public --permanent --add-service=ssh
-          firewall-cmd --reload
     Metadata:
       'AWS::CloudFormation::Designer':
         id: f05d419d-9129-4547-9eba-bfd38fe74f2e
