@@ -1,5 +1,9 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: AWS CloudFormation template for create a simple web server with public access.
+Description: >-
+ AWS plantilla VPC: Plantilla de CloudFormation Básica para la creación de un Web Server con acceso público. 
+ Desarrollada con AWS Cloudformation Designer. 
+ Esta plantilla crea una nueva VPC, Internet Gateway, subnet y Security Group. 
+ Los Parametros Tipo de instancia, Keypair, IP para configurar Security Group.
 Metadata:
   'AWS::CloudFormation::Designer':
     47e463f6-cf95-42ec-ad82-724f24be7762:

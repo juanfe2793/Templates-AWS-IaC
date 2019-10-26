@@ -1,4 +1,6 @@
 #!/bin/bash
+# Script de prueba para instalar una aplicación web demo de Amazon. Script proporcionado por Amazon en su curso ACA. 
+# Todos los derechos reservados. El uso de este script es con fines academicos.
 # Install Apache Web Server and PHP
 yum install -y httpd
 amazon-linux-extras install -y php7.2
