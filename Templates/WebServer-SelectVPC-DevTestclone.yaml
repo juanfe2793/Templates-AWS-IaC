@@ -5,12 +5,12 @@ Description: >-
   Solo permite el despliegue en regiones de Estados Unidos. 
   Los parametros de VPC, security group, KeyPair, Nombre, Etiquetas
   son elegidas por los usuarios. Adcionalmente, se crea un Bucket S3.
-  Por último, se crea una copia del servidor desplegado en una VPC de desarrollo y pruebas. 
+  Por ultimo, se crea una copia del servidor desplegado en una VPC de desarrollo y pruebas. 
 Parameters:
-  VPC:
-    Description: Seleccione la VPC de producción dónde será desplegada la instancia EC2.
-    Type: AWS::EC2::VPC::Id
-    ConstraintDescription: Debe seleccionar una VPC existente.
+  Subnet:
+    Description: Seleccione la Subred donde sera desplegada la instancia EC2.
+    Type: AWS::EC2::Subnet::Id
+    ConstraintDescription: Debe seleccionar una Subred existente.
   SecurityGroup:
     Description: Seleccione el grupo de seguridad para desplegar la instancia EC2.
     Type: AWS::EC2::SecurityGroup::GroupName
@@ -236,7 +236,7 @@ Resources:
           AssociatePublicIpAddress: 'true'
           DeviceIndex: '0'
           DeleteOnTermination: 'true'
-          VpcId: !Ref VPC
+          SubnetId: !Ref Subnet
       UserData: 
         Fn::Base64: !Sub |
           #!/bin/bash -xe
