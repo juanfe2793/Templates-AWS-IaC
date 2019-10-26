@@ -1,0 +1,278 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  Plantilla Despliegue Infraestructura Seleccionando todo: Esta plantilla crea un stack LAMP
+  utilizando una instancia de EC2 con S.O. Red Hat Enterprise. 
+  Solo permite el despliegue en regiones de Estados Unidos. 
+  Los parametros de VPC, security group, KeyPair, Nombre, Etiquetas
+  son elegidas por los usuarios. Adcionalmente, se crea un Bucket S3.
+  Por ultimo, se crea una copia del servidor desplegado en una VPC de desarrollo y pruebas. 
+Parameters:
+  Subnet:
+    Description: Seleccione la Subred donde sera desplegada la instancia EC2.
+    Type: AWS::EC2::Subnet::Id
+    ConstraintDescription: Debe seleccionar una Subred existente.
+  SecurityGroup:
+    Description: Seleccione el grupo de seguridad para desplegar la instancia EC2.
+    Type: AWS::EC2::SecurityGroup::GroupName
+    ConstraintDescription: Debe seleccionar un grupo de seguridad existente.
+  ProjectTag:
+    Description: Escriba el nombre de la etiqueta de proyecto para configurar la instancia EC2.
+    Type: String
+    ConstraintDescription: Debe escribir caracteres.
+  KeyName:
+    Description: Seleccione una llave de acceso existente para el ingreso por SSH a la instancia EC2.
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    ConstraintDescription: Debe seleccionar una llave existente.
+  InstanceType:
+    Description: Seleccione el tipo de instancia que desea desplegar
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t1.micro
+      - t2.nano
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+      - m1.small
+      - m1.medium
+      - m1.large
+      - m1.xlarge
+      - m2.xlarge
+      - m2.2xlarge
+      - m2.4xlarge
+      - m3.medium
+      - m3.large
+      - m3.xlarge
+      - m3.2xlarge
+      - m4.large
+      - m4.xlarge
+      - m4.2xlarge
+      - m4.4xlarge
+      - m4.10xlarge
+      - c1.medium
+      - c1.xlarge
+      - c3.large
+      - c3.xlarge
+      - c3.2xlarge
+      - c3.4xlarge
+      - c3.8xlarge
+      - c4.large
+      - c4.xlarge
+      - c4.2xlarge
+      - c4.4xlarge
+      - c4.8xlarge
+      - g2.2xlarge
+      - g2.8xlarge
+      - r3.large
+      - r3.xlarge
+      - r3.2xlarge
+      - r3.4xlarge
+      - r3.8xlarge
+      - i2.xlarge
+      - i2.2xlarge
+      - i2.4xlarge
+      - i2.8xlarge
+      - d2.xlarge
+      - d2.2xlarge
+      - d2.4xlarge
+      - d2.8xlarge
+      - hi1.4xlarge
+      - hs1.8xlarge
+      - cr1.8xlarge
+      - cc2.8xlarge
+      - cg1.4xlarge
+    ConstraintDescription: Debe seleccionar un tipo de instancia válido
+  SSHLocation:
+    Description: ' Establezca el rango de IPs valido para ins'
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 0.0.0.0/0
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: Debe ingresar un rango de IPs validas, considerando la sintaxis x.x.x.x/x.
+Mappings:
+  AWSInstanceType2Arch:
+    t1.micro:
+      Arch: HVM64
+    t2.nano:
+      Arch: HVM64
+    t2.micro:
+      Arch: HVM64
+    t2.small:
+      Arch: HVM64
+    t2.medium:
+      Arch: HVM64
+    t2.large:
+      Arch: HVM64
+    m1.small:
+      Arch: HVM64
+    m1.medium:
+      Arch: HVM64
+    m1.large:
+      Arch: HVM64
+    m1.xlarge:
+      Arch: HVM64
+    m2.xlarge:
+      Arch: HVM64
+    m2.2xlarge:
+      Arch: HVM64
+    m2.4xlarge:
+      Arch: HVM64
+    m3.medium:
+      Arch: HVM64
+    m3.large:
+      Arch: HVM64
+    m3.xlarge:
+      Arch: HVM64
+    m3.2xlarge:
+      Arch: HVM64
+    m4.large:
+      Arch: HVM64
+    m4.xlarge:
+      Arch: HVM64
+    m4.2xlarge:
+      Arch: HVM64
+    m4.4xlarge:
+      Arch: HVM64
+    m4.10xlarge:
+      Arch: HVM64
+    c1.medium:
+      Arch: HVM64
+    c1.xlarge:
+      Arch: HVM64
+    c3.large:
+      Arch: HVM64
+    c3.xlarge:
+      Arch: HVM64
+    c3.2xlarge:
+      Arch: HVM64
+    c3.4xlarge:
+      Arch: HVM64
+    c3.8xlarge:
+      Arch: HVM64
+    c4.large:
+      Arch: HVM64
+    c4.xlarge:
+      Arch: HVM64
+    c4.2xlarge:
+      Arch: HVM64
+    c4.4xlarge:
+      Arch: HVM64
+    c4.8xlarge:
+      Arch: HVM64
+    g2.2xlarge:
+      Arch: HVMG2
+    g2.8xlarge:
+      Arch: HVMG2
+    r3.large:
+      Arch: HVM64
+    r3.xlarge:
+      Arch: HVM64
+    r3.2xlarge:
+      Arch: HVM64
+    r3.4xlarge:
+      Arch: HVM64
+    r3.8xlarge:
+      Arch: HVM64
+    i2.xlarge:
+      Arch: HVM64
+    i2.2xlarge:
+      Arch: HVM64
+    i2.4xlarge:
+      Arch: HVM64
+    i2.8xlarge:
+      Arch: HVM64
+    d2.xlarge:
+      Arch: HVM64
+    d2.2xlarge:
+      Arch: HVM64
+    d2.4xlarge:
+      Arch: HVM64
+    d2.8xlarge:
+      Arch: HVM64
+    hi1.4xlarge:
+      Arch: HVM64
+    hs1.8xlarge:
+      Arch: HVM64
+    cr1.8xlarge:
+      Arch: HVM64
+    cc2.8xlarge:
+      Arch: HVM64
+  AWSRegionArch2AMI:
+    us-east-1:
+      HVM64: ami-0c322300a1dd5dc79
+      HVMG2: ami-03587fa4048e9eb92
+    us-east-2:
+      HVM64: ami-0520e698dd500b1d1
+      HVMG2: ami-0099847d600887c9f
+    us-west-1:
+      HVM64: ami-00fc224d9834053d6
+    us-west-2:
+      HVM64: ami-00fc224d9834053d6
+      HVM64: ami-047f9f2f5072dd073
+
+Resources:
+  WebApp:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: !FindInMap 
+        - AWSRegionArch2AMI
+        - !Ref 'AWS::Region'
+        - !FindInMap 
+          - AWSInstanceType2Arch
+          - !Ref InstanceType
+          - Arch
+      Tags: 
+        - Key: Name
+          Value: !Ref ProjectTag
+      KeyName: !Ref KeyName
+      IamInstanceProfile: SystemManager-EC2-Role
+      InstanceInitiatedShutdownBehavior: stop
+      NetworkInterfaces:
+        - GroupSet:
+            - !Ref SecurityGroup
+          AssociatePublicIpAddress: 'true'
+          DeviceIndex: '0'
+          DeleteOnTermination: 'true'
+          SubnetId: !Ref Subnet
+      UserData: 
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          yum update -y 
+          #Instala los componentes base
+          yum install -y httpd php aws-cfn-bootstrap 
+          dnf install openssh-server
+          amazon-linux-extras install -y php7.2
+          #Install java
+          dnf install java-11-openjdk-devel
+          dnf install python3
+          #Se realiza la configuración para iniciar los servicios
+          chkconfig httpd on
+          systemctl start sshd
+          systemctl enable sshd
+          service httpd start
+          # Apertura del puerto 22
+          firewall-cmd --zone=public --permanent --add-service=ssh
+          firewall-cmd --reload
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: f05d419d-9129-4547-9eba-bfd38fe74f2e
+      'AWS::CloudFormation::Init':
+        configSets:
+          All:
+            - ConfigureSampleApp
+        ConfigureSampleApp:
+          packages:
+            yum:
+              httpd: []
+Outputs:
+    WebsiteURL:
+      Description: URL for newly created LAMP stack
+      Value: !Join 
+        - ''
+        - - 'http://'
+          - !GetAtt 
+            - WebApp
+            - PublicDnsName
