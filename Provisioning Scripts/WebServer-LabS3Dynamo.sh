@@ -11,9 +11,9 @@ mv /tmp/lab1src/*.php /var/www/html/
 # Download and install the AWS SDK for PHP
 wget https://github.com/aws/aws-sdk-php/releases/download/3.62.3/aws.zip
 unzip aws -d /var/www/html
-# Determine Region
+# Determine Region. *Change de region ID.
 export AWS_DEFAULT_REGION = us-east-1
-# Copy files to Amazon S3 bucket with name webapp-*
+# Copy files to Amazon S3 bucket with your own name *change the name "webapp-jgomez"
 BUCKET=webapp-jgomez
 aws s3 cp /tmp/lab1src/jquery/ s3://$BUCKET/jquery/ --recursive --acl public-read 
 aws s3 cp /tmp/lab1src/images/ s3://$BUCKET/images/ --recursive --acl public-read 
