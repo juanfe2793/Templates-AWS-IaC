@@ -28,3 +28,13 @@ aws dynamodb batch-write-item --request-items file:///tmp/lab1src/scripts/servic
 # Turn on web server
 chkconfig httpd on
 service httpd start
+#Instalación CodeDeploy Agent.
+export AWS_DEFAULT_REGION = us-west-2
+BUCKET=aws-codedeploy-us-west-2
+sudo yum install -y ruby
+cd /home/ec2-user
+wget https://$BUCKET.s3.us-west-2.amazonaws.com/latest/install
+chmod a+x ./install
+sudo ./install auto
+sudo service codedeploy-agent start
+sudo service codedeploy-agent status
