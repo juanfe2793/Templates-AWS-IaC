@@ -1,4 +1,4 @@
-#!/bin/bash -xe
+#!/bin/bash
 #Descripcion: 
 yum update -y 
 yum install -y httpd php aws-cfn-bootstrap
