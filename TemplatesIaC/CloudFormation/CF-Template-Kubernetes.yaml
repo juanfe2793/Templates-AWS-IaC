@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: 'EKS Managed Nodes (SSH access: true) [created by eksctl]'
+Description: 'EKS template'
 Resources:
   ManagedNodeGroup:
     Type: 'AWS::EKS::Nodegroup'
