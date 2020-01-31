@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'EKS Managed Nodes (SSH access: true) [created by eksctl]'
+Resources:
+  ManagedNodeGroup:
+    Type: 'AWS::EKS::Nodegroup'
+    Properties:
+      ClusterName: prod
+      NodegroupName: standard-workers
+      ScalingConfig:
+        MinSize: 1
+        MaxSize: 3
+        DesiredSize: 2
+      Subnets: !Split 
+        - ','
+        - !ImportValue 'eksctl-prod-cluster::SubnetsPublic'
+      InstanceTypes:
+        - t2.micro
+      AmiType: AL2_x86_64
+      RemoteAccess:
+        Ec2SshKey: Container-Use
+      NodeRole: !GetAtt 
+        - NodeInstanceRole
+        - Arn
+      Labels:
+        alpha.eksctl.io/cluster-name: prod
+        alpha.eksctl.io/nodegroup-name: standard-workers
+      Tags:
+        alpha.eksctl.io/nodegroup-name: standard-workers
+        alpha.eksctl.io/nodegroup-type: managed
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 61d00e4d-f2ff-47f4-ac71-1be44575d33e
+  NodeInstanceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - 'sts:AssumeRole'
+            Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+        Version: 2012-10-17
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly'
+        - 'arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy'
+        - 'arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy'
+      Path: /
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 1450dde7-f616-4b25-bc96-c76dd491a5f7
